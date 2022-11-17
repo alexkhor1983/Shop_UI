@@ -8,6 +8,8 @@ import Register from "./pages/User/register/Register";
 import Login from "./pages/User/login/Login";
 import Cart from "./pages/User/cart/Cart";
 import CheckOut from "./pages/checkOut/CheckOut";
+import Profile from "./pages/User/profile/Profile"
+import EditProfileForm from "./pages/User/profile/EditProfile"
 
 import AdminDashboard from "./pages/Admin/home/Home";
 import EditProduct from "./pages/Admin/editProduct/EditProduct";
@@ -39,6 +41,10 @@ const App = () => {
               <Route path="/Cart" element={<Cart />}/>
 
               <Route path="/CheckOut" element={<CheckOut />}/>
+
+              <Route path="/Profile" element={<Profile />}/>
+              
+              <Route path="/EditProfile" element={<EditProfileForm />}/>
 
               <Route path="/Admin/users" element={<UserList />}/>
 

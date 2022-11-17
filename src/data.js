@@ -82,3 +82,21 @@ export const sliderItems = [
       likes : false,
     },
   ]
+
+export const testedProducts = [
+  {
+    id:1,
+    img:"https://d3o2e4jr3mxnm3.cloudfront.net/Mens-Jake-Guitar-Vintage-Crusher-Tee_68382_1_lg.png",
+    likes : true,
+  },
+  {
+    id:2,
+    img:"https://cdn.shopify.com/s/files/1/0101/4832/products/Angela_Natural_Tee.png?v=1606780388",
+    likes : false,
+  },
+  {
+    id:3,
+    img:"https://www.prada.com/content/dam/pradanux_products/U/UCS/UCS319/1YOTF010O/UCS319_1YOT_F010O_S_182_SLF.png",
+    likes : true,
+  },
+]

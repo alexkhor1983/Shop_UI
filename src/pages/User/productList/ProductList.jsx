@@ -1,11 +1,12 @@
 import styled from "styled-components";
 import Navbar from "../../../components/User/navbar/Navbar";
 import Announcement from "../../../components/User/announcement/Announcement";
-import Products from "../../../components/User/products/Products";
 import Footer from "../../../components/User/footer/Footer";
 import { mobile } from "../../../responsive";
-import {Search} from "@material-ui/icons";
-
+import {useEffect, useState} from 'react'
+import {getProducts} from '../../../components/api/axios'
+import SearchBar from '../../../components/searchBar/searchBar'
+import Products from "../../../components/User/products/Products";
 const Container = styled.div``;
 
 const Title = styled.h1`
@@ -46,43 +47,59 @@ const SearchContainer = styled.div`
 
 const Input = styled.input`
   border: none;
-  ${mobile({ max_width: "40px" })}
+  ${mobile({ max_width: '60px' })}
+`;
+
+const ProductContainer = styled.div`
+    text-align: center;
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
 `;
 
 const ProductList = () => {
-  return (
+    const[products,setProducts] = useState([]);
+    const[searchResults, setSearchResults] = useState([]);
+    const[category,setCategory] = useState('');
+
+    useEffect(()=>{
+        getProducts().then(json => {
+            setProducts(json)
+            setSearchResults(json)
+        })
+        setCategory('All')
+    },[])
+    //included just place it empty array [] the whole component only will run one time for useEffect()
+    //deps variable is necessary to be used, if not it will be like infinity loop, keep performing until computer cannot handle
+
+    const handleChangeCategory = (e) => {
+        setCategory(e.target.value)
+    }
+    return (
     <Container>
       <Navbar />
       <Announcement />
       <Title>Dresses</Title>
       <FilterContainer>
         <Filter>
-          <FilterText>Filter Products:</FilterText>
-          <Select>
-            <Option disabled selected>
-              Size
-            </Option>
-            <Option>XS</Option>
-            <Option>S</Option>
+          <FilterText>Filter Products Category:</FilterText>
+          <Select onChange={handleChangeCategory} >
+            <Option >All</Option>
+            <Option>Clothes</Option>
+            <Option>Jackets</Option>
             <Option>M</Option>
             <Option>L</Option>
             <Option>XL</Option>
           </Select>
         </Filter>
         <Filter>
-        {/*  <FilterText>Sort Products:</FilterText>*/}
-        {/*  <Select>*/}
-        {/*    <Option selected>Newest</Option>*/}
-        {/*    <Option>Price (asc)</Option>*/}
-        {/*    <Option>Price (desc)</Option>*/}
-        {/*  </Select>*/}
-            <SearchContainer>
-                <Input placeholder="Search" />
-                <Search style={{ color: "gray", fontSize: 16 }} />
-            </SearchContainer>
+            <SearchBar products={products} setSearchResults={setSearchResults} />
         </Filter>
       </FilterContainer>
-      <Products />
+      <ProductContainer>
+        <Products searchResults={searchResults} category={category}/>
+      </ProductContainer>
       <Footer />
     </Container>
   );

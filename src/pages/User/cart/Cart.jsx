@@ -1,9 +1,12 @@
+import {useSelector} from "react-redux"
+import {Link} from "react-router-dom";
 import { Add, Remove } from "@material-ui/icons";
 import styled from "styled-components";
 import Announcement from "../../../components/User/announcement/Announcement";
 import Footer from "../../../components/User/footer/Footer";
 import Navbar from "../../../components/User/navbar/Navbar";
 import { mobile } from "../../../responsive";
+import {useEffect, useState} from "react";
 
 const Container = styled.div``;
 
@@ -154,6 +157,21 @@ const Button = styled.button`
 `;
 
 const Cart = () => {
+  const cart = useSelector((state) => state.cart);
+  const [countLikes,setCountLikes] = useState(0)
+
+  const handleAddCartQuantity = (cartId) => {
+
+  }
+
+  const handleMinusCartQuantity = (cartId) => {
+
+  }
+
+  useEffect(()=>{
+    setCountLikes(1)
+  });
+
   return (
     <Container>
       <Navbar />
@@ -161,64 +179,50 @@ const Cart = () => {
       <Wrapper>
         <Title>YOUR CART</Title>
         <Top>
-          <TopButton>CONTINUE SHOPPING</TopButton>
+          <Link to={'/productList'} style={{ textDecoration: 'none' }}>
+          <TopButton >CONTINUE SHOPPING</TopButton>
+          </Link>
           <TopTexts>
-            <TopText>Shopping Cart(2)</TopText>
-            <TopText>Your Likes List (0)</TopText>
+            <TopText>Shopping Cart ({cart ? cart.cartItems.length : 0})</TopText>
+            <TopText>Your Likes List ({localStorage.getItem("user_id") ? countLikes : 0})</TopText>
           </TopTexts>
           <TopButton type="filled">CHECKOUT NOW</TopButton>
         </Top>
         <Bottom>
           <Info>
-            <Product>
-              <ProductDetail>
-                <Image src="https://img.ltwebstatic.com/images3_pi/2021/07/26/1627299522cd523db658f58d35a47acccfd5dcf812_thumbnail_900x.webp" />
-                <Details>
-                  <ProductName>
-                    <b>Product:</b> Solid Crew Neck Basic Tee
-                  </ProductName>
-                  <ProductId>
-                    <b>ID:</b> 1
-                  </ProductId>
-                  <ProductSize>
-                    <b>Size:</b> M
-                  </ProductSize>
-                </Details>
-              </ProductDetail>
-              <PriceDetail>
-                <ProductAmountContainer>
-                  <Add />
-                  <ProductAmount>2</ProductAmount>
-                  <Remove />
-                </ProductAmountContainer>
-                <ProductPrice>RM 30</ProductPrice>
-              </PriceDetail>
-            </Product>
-            <Hr />
-            <Product>
-              <ProductDetail>
-                <Image src="https://i.pinimg.com/originals/2d/af/f8/2daff8e0823e51dd752704a47d5b795c.png" />
-                <Details>
-                  <ProductName>
-                    <b>Product:</b> HAKURA T-SHIRT
-                  </ProductName>
-                  <ProductId>
-                    <b>ID:</b> 2
-                  </ProductId>
-                  <ProductSize>
-                    <b>Size:</b> M
-                  </ProductSize>
-                </Details>
-              </ProductDetail>
-              <PriceDetail>
-                <ProductAmountContainer>
-                  <Add />
-                  <ProductAmount>1</ProductAmount>
-                  <Remove />
-                </ProductAmountContainer>
-                <ProductPrice>RM 20</ProductPrice>
-              </PriceDetail>
-            </Product>
+            {cart.cartItems.length === 0 ? (
+                <p style={{width: '100%',height: '100%',display: 'flex','align-items': 'center','justify-content': 'center'}}>Cart is Currently Empty</p>
+            ) : (
+                cart.cartItems?.map((cartItem)=>(
+                    <div>
+                      <Product>
+                        <ProductDetail>
+                          <Image src={cartItem?.productImg} />
+                          <Details>
+                          <ProductName>
+                            <b>Product:</b> {cartItem.productName}
+                          </ProductName>
+                          <ProductId>
+                            <b>ID:</b> {cartItem.productId}
+                          </ProductId>
+                          <ProductSize>
+                            <b>Size:</b> {cartItem.option}
+                          </ProductSize>
+                        </Details>
+                      </ProductDetail>
+                      <PriceDetail>
+                        <ProductAmountContainer>
+                          <Add />
+                          <ProductAmount>{cartItem.cartQuantity}</ProductAmount>
+                          <Remove />
+                        </ProductAmountContainer>
+                        <ProductPrice>RM {cartItem.productPrice}</ProductPrice>
+                      </PriceDetail>
+                    </Product>
+                  <Hr/>
+                </div>
+                ))
+            )}
           </Info>
           <Summary>
             <SummaryTitle>ORDER SUMMARY</SummaryTitle>

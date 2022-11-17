@@ -1,54 +1,26 @@
-import "./newUser.css";
+import React from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { Card, Button} from '@themesberg/react-bootstrap';
 
-export default function NewUser() {
+
+export default function Profile() {
   return (
-    <div className="profile">
-      <h1 className="newUserTitle">New User</h1>
-      <form className="newUserForm">
-        <div className="newUserItem">
-          <label>Username</label>
-          <input type="text" placeholder="john" />
-        </div>
-        <div className="newUserItem">
-          <label>Full Name</label>
-          <input type="text" placeholder="John Smith" />
-        </div>
-        <div className="newUserItem">
-          <label>Email</label>
-          <input type="email" placeholder="john@gmail.com" />
-        </div>
-        <div className="newUserItem">
-          <label>Password</label>
-          <input type="password" placeholder="password" />
-        </div>
-        <div className="newUserItem">
-          <label>Phone</label>
-          <input type="text" placeholder="+1 123 456 78" />
-        </div>
-        <div className="newUserItem">
-          <label>Address</label>
-          <input type="text" placeholder="New York | USA" />
-        </div>
-        <div className="newUserItem">
-          <label>Gender</label>
-          <div className="newUserGender">
-            <input type="radio" name="gender" id="male" value="male" />
-            <label for="male">Male</label>
-            <input type="radio" name="gender" id="female" value="female" />
-            <label for="female">Female</label>
-            <input type="radio" name="gender" id="other" value="other" />
-            <label for="other">Other</label>
-          </div>
-        </div>
-        <div className="newUserItem">
-          <label>Active</label>
-          <select className="newUserSelect" name="active" id="active">
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-          </select>
-        </div>
-        <button className="newUserButton">Create</button>
-      </form>
-    </div>
+<div>
+  <Card border="light" className="text-center p-0 mb-4">
+    <div style={{ backgroundImage: `url("https://images-cdn.welcomesoftware.com/Zz0zZTliMjQ4MzhlNGExMWViYmJiMjFiZTI2ZWNmN2MzZA==")` }} className="profile-cover rounded-top" />
+    <Card.Body className="pb-5">
+      <Card.Img src="" alt="Neil Portrait" className="user-avatar large-avatar rounded-circle mx-auto mt-n7 mb-4" />
+      <Card.Title>Neil Sims</Card.Title>
+      <Card.Subtitle className="fw-normal">Senior Software Engineer</Card.Subtitle>
+      <Card.Text className="text-gray mb-4">New York, USA</Card.Text>
+
+      <Button variant="primary" size="sm" className="me-2">
+        <FontAwesomeIcon icon={faUserPlus} className="me-1" /> Connect
+      </Button>
+      <Button variant="secondary" size="sm">Send Message</Button>
+    </Card.Body>
+  </Card>
+</div>
   );
 }

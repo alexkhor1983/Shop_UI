@@ -5,17 +5,29 @@
   "dependencies": {
     "@emotion/react": "^11.10.0",
     "@emotion/styled": "^11.10.0",
+    "@fortawesome/fontawesome-svg-core": "^6.2.0",
+    "@fortawesome/free-solid-svg-icons": "^6.2.0",
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
     "@mui/icons-material": "^5.10.2",
+    "@reduxjs/toolkit": "^1.9.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
+    "@themesberg/react-bootstrap": "^1.4.1",
+    "axios": "^1.1.3",
+    "bootstrap": "^5.2.2",
+    "caniuse-lite": "^1.0.30001431",
+    "nanoid": "^4.0.0",
     "react": "^17.0.2",
     "react-bootstrap": "^2.5.0",
+    "react-datetime": "^3.2.0",
     "react-dom": "^17.0.2",
     "react-helmet": "^6.1.0",
+    "react-redux": "^8.0.5",
     "react-scripts": "4.0.3",
+    "react-select": "^5.6.0",
     "recharts": "^2.1.13",
     "styled-components": "^5.3.1",
     "web-vitals": "^1.0.1"
@@ -47,8 +59,12 @@
   "devDependencies": {
     "@material-ui/data-grid": "^4.0.0-alpha.37",
     "@mui/material": "^5.10.2",
+    "moment-timezone": "^0.5.38",
     "react-floating-whatsapp": "^4.0.5",
+    "react-hook-form": "^7.39.3",
     "react-router-dom": "^6.3.0",
-    "react-whatsapp-chat-widget": "^1.1.1"
+    "react-toastify": "^8.0.0",
+    "react-whatsapp-chat-widget": "^1.1.1",
+    "sass": "^1.56.1"
   }
 }

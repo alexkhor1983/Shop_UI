@@ -3,7 +3,7 @@ import { DataGrid } from "@material-ui/data-grid";
 import { DeleteOutline } from "@material-ui/icons";
 import { productRows } from "../../../dummyData";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import Topbar from "../../../components/Admin/topbar/Topbar";
 import Sidebar from "../../../components/Admin/sidebar/Sidebar";
 import Button from '@mui/material/Button';
@@ -11,8 +11,19 @@ import Button from '@mui/material/Button';
 export default function ProductList() {
   const [data, setData] = useState(productRows);
 
-  const handleDelete = (id) => {
-    setData(data.filter((item) => item.id !== id));
+  const handleDelete = id => {
+    //TODO : Create axios request make the single delete achieve with sending ${id} parameter
+    setData(data.filter(item => item.id !== id));
+  };
+
+  const handleMultiSelectedDelete = () => {
+    if(selectionModel.length > 0) {
+      setData(data.filter(item =>
+        selectionModel.indexOf(item.id) === -1
+      ));
+    }else{
+      //TODO : Toastify the no row selected message
+    }
   };
 
   const columns = [
@@ -48,7 +59,7 @@ export default function ProductList() {
       renderCell: (params) => {
         return (
           <>
-            <Link to={"/product/" + params.row.id}>
+            <Link to={`/Admin/product/${params.row.id}`}>
               <button className="productListEdit">Edit</button>
             </Link>
             <DeleteOutline
@@ -60,6 +71,7 @@ export default function ProductList() {
       },
     },
   ];
+  const [selectionModel, setSelectionModel] = useState([]);
 
   return (
       <div>
@@ -68,7 +80,7 @@ export default function ProductList() {
           <Sidebar />
 
     <div className="productList">
-      <Button variant="outlined" startIcon={<DeleteOutline />}>
+      <Button onClick={() => handleMultiSelectedDelete()} variant="outlined" startIcon={<DeleteOutline />}>
         Delete selected
       </Button>
 
@@ -78,6 +90,10 @@ export default function ProductList() {
         columns={columns}
         pageSize={8}
         checkboxSelection
+        onSelectionModelChange={(newSelectionModel) => {
+          setSelectionModel(newSelectionModel);
+        }}
+        selectionModel={selectionModel}
       />
     </div>
         </div>

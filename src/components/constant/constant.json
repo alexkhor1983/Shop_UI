@@ -1,0 +1,5 @@
+{
+  "Stripe_key" : "",
+  "Backend_url" : "http://localhost:5000",
+  "S3_url" : ""
+}

@@ -58,13 +58,20 @@ const Link = styled.a`
 `;
 
 const Login = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    let username = e.target.username.value;
+    let password = e.target.password.value;
+
+    //alert(`${username} + ${password}`);
+  }
   return (
-    <Container>
+     <Container>
       <Wrapper>
         <Title>SIGN IN</Title>
-        <Form>
-          <Input placeholder="username" />
-          <Input placeholder="password" />
+        <Form onSubmit={handleSubmit}>
+          <Input name="username" placeholder="username" />
+          <Input name="password" placeholder="password" type="password"/>
           <Button>LOGIN</Button>
           <Link>DO NOT YOU REMEMBER THE PASSWORD?</Link>
           <Link>CREATE A NEW ACCOUNT</Link>

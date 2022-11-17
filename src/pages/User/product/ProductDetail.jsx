@@ -1,10 +1,18 @@
+import {useEffect, useState} from "react";
+import Select from 'react-select';
+import {useDispatch} from "react-redux";
+import {useParams} from "react-router-dom";
 import { Add, Remove,Search } from "@material-ui/icons";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import styled from "styled-components";
+import {getProductsById} from "../../../components/api/axios";
 import Announcement from "../../../components/User/announcement/Announcement";
 import Footer from "../../../components/User/footer/Footer";
 import Navbar from "../../../components/User/navbar/Navbar";
 import { mobile } from "../../../responsive";
-
+import {addToCart} from "../../../cartSlice";
+import Rating from '@mui/material/Rating';
 const Container = styled.div``;
 
 const Wrapper = styled.div`
@@ -59,23 +67,8 @@ const Filter = styled.div`
 const FilterTitle = styled.span`
   font-size: 20px;
   font-weight: 200;
+  padding-right: 20px
 `;
-
-const FilterColor = styled.div`
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background-color: ${(props) => props.color};
-  margin: 0px 5px;
-  cursor: pointer;
-`;
-
-const FilterSize = styled.select`
-  margin-left: 10px;
-  padding: 5px;
-`;
-
-const FilterSizeOption = styled.option``;
 
 const AddContainer = styled.div`
   width: 50%;
@@ -113,13 +106,6 @@ const Button = styled.button`
       background-color: #f8f4f4;
   }
 `;
-const SearchContainer = styled.div`
-  border: 0.5px solid lightgray;
-  display: flex;
-  align-items: center;
-  margin-left: 25px;
-  padding: 5px;
-`;
 
 const Input = styled.input`
   border: none;
@@ -127,50 +113,81 @@ const Input = styled.input`
 `;
 
 const ProductDetail = () => {
+
+  const { productId } = useParams()
+  const dispatch = useDispatch()
+
+  const [selectedOption, setSelectedOption] = useState(null)
+  const [cartQuantity,setCartQuantity] = useState(1)
+  const [product, setProduct] = useState()
+  const [options,setOptions] = useState([])
+  const [rating,setRating] = useState(0)
+
+  useEffect(() => {
+    (async () => {
+      const res = await getProductsById(productId)
+
+      let result = [];
+
+      for (let i=0; i< res.options.length; i++) { //loop for the options that shows at react-select component
+        result[i] = {
+          value : res.options[i] , label : res.options[i]
+        }
+      }
+      setProduct(res)
+      setOptions(result)
+      setRating(res?.avgRating)
+    })()
+  }, [])
+
+  const handleAddToCart = () => {
+    console.log(selectedOption)
+    if(selectedOption === null){
+      const notify = () => toast.error("Please Select Size");
+      notify()
+      return
+    }
+    dispatch(addToCart({productId:product?.id , productName:product?.productName , productImg:product?.img ,productPrice:product?.price,
+      option:selectedOption,cartQuantity:cartQuantity}))
+  }
+
+  const handleDecreaseQuantity = () => {
+    if(cartQuantity > 1){
+      setCartQuantity(cartQuantity.valueOf() -1 )
+    }
+  }
+
   return (
     <Container>
       <Navbar />
       <Announcement />
       <Wrapper>
         <ImgContainer>
-          <Image src="https://i.ibb.co/S6qMxwr/jean.jpg" />
+          <Image src={product?.img} />
         </ImgContainer>
         <InfoContainer>
-          <Title>Denim Jumpsuit</Title>
+          <Title>{product?.productName}</Title>
+          <Title><Rating name="read-only" value={rating} readOnly /></Title>
           <Desc>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec
-            venenatis, dolor in finibus malesuada, lectus ipsum porta nunc, at
-            iaculis arcu nisi sed mauris. Nulla fermentum vestibulum ex, eget
-            tristique tortor pretium ut. Curabitur elit justo, consequat id
-            condimentum ac, volutpat ornare.
+            {product?.desc}
           </Desc>
-          <Price>$ 20</Price>
+          <Price>RM {product?.price}</Price>
           <FilterContainer>
-
-            {/*<Filter>*/}
-            {/*  <FilterTitle>Color</FilterTitle>*/}
-            {/*  <FilterColor color="black" />*/}
-            {/*  <FilterColor color="darkblue" />*/}
-            {/*  <FilterColor color="gray" />*/}
-            {/*</Filter>*/}
             <Filter>
               <FilterTitle>Size</FilterTitle>
-              <FilterSize>
-                <FilterSizeOption>XS</FilterSizeOption>
-                <FilterSizeOption>S</FilterSizeOption>
-                <FilterSizeOption>M</FilterSizeOption>
-                <FilterSizeOption>L</FilterSizeOption>
-                <FilterSizeOption>XL</FilterSizeOption>
-              </FilterSize>
+              <Select
+                  onChange={select => setSelectedOption(select.value)}
+                  options={options}
+              />
             </Filter>
           </FilterContainer>
           <AddContainer>
             <AmountContainer>
-              <Remove />
-              <Amount>1</Amount>
-              <Add />
+              <Remove onClick={handleDecreaseQuantity}/>
+              <Amount>{cartQuantity}</Amount>
+              <Add onClick={() => setCartQuantity(cartQuantity.valueOf() + 1)}/>
             </AmountContainer>
-            <Button>ADD TO CART</Button>
+            <Button onClick={handleAddToCart}>ADD TO CART<ToastContainer /></Button>
           </AddContainer>
         </InfoContainer>
       </Wrapper>

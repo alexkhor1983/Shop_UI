@@ -1,8 +1,11 @@
+import {Link} from "react-router-dom";
+import {useSelector} from "react-redux"
+import { mobile } from "../../../responsive";
 import { Badge } from "@material-ui/core";
 import { Search, ShoppingCartOutlined } from "@material-ui/icons";
 import React from "react";
 import styled from "styled-components";
-import { mobile } from "../../../responsive";
+
 
 const Container = styled.div`
   height: 60px;
@@ -67,23 +70,29 @@ const MenuItem = styled.div`
 `;
 
 const Navbar = () => {
+  const cart = useSelector((state) => state.cart);
   return (
     <Container>
       <Wrapper>
         <Left>
           <Language>EN</Language>
-
         </Left>
         <Center>
           <Logo>HolaClothes</Logo>
         </Center>
         <Right>
+          <Link to={'/Register'} style={{ textDecoration: 'none' }}>
           <MenuItem>REGISTER</MenuItem>
+          </Link>
+          <Link to={'/Login' } style={{ textDecoration: 'none' }}>
           <MenuItem>SIGN IN</MenuItem>
+          </Link>
           <MenuItem>
-            <Badge badgeContent={3} color="primary">
+            <Link to={'/Cart'}>
+            <Badge badgeContent={cart.cartItems.length} color="primary">
               <ShoppingCartOutlined />
             </Badge>
+            </Link>
           </MenuItem>
         </Right>
       </Wrapper>

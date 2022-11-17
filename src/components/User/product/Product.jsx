@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import {
     FavoriteBorderOutlined,
     SearchOutlined,
@@ -5,7 +6,8 @@ import {
     Favorite
 } from "@material-ui/icons";
 import styled from "styled-components";
-import {Link} from "react-router-dom";
+import {Link, Navigate} from "react-router-dom";
+import {useState} from "react";
 
 const Info = styled.div`
   opacity: 0;
@@ -22,18 +24,18 @@ const Info = styled.div`
   transition: all 0.5s ease;
   cursor: pointer;
 `;
-
 const Container = styled.div`
   flex: 1;
   margin: 5px;
-  min-width: 280px;
+  
   height: 350px;
-  display: flex;
+  min-width: 280px;
+  
   align-items: center;
   justify-content: center;
   background-color: #f5fbfd;
   position: relative;
-
+  display: flex;
   &:hover ${Info}{
     opacity: 1;
   }
@@ -69,14 +71,21 @@ const Icon = styled.div`
 `;
 
 const Product = ({item}) => {
-
+    const [itemLike,setItemLike] = useState(item.likes);
+    let navigate = useNavigate();
     const likesProduct = (id) => {
+        if (!localStorage.getItem('user_id')){
+            alert('Have to login before like the product')
+            navigate("/Login");
+        }
         // axios request and refresh the page
+        setItemLike(itemLike => !itemLike);
         console.log("Likes the product id = " + id);
     }
 
     const unlikeProduct = (id) => {
         // axios request and refresh the page
+        setItemLike(itemLike => !itemLike);
         console.log("Unlike the product id = " + id);
     }
 
@@ -86,17 +95,12 @@ const Product = ({item}) => {
             <Image src={item.img}/>
             <Info>
                 <Icon>
-                    <Link to={`/AddToCart/${item.id}`}>
-                        <ShoppingCartOutlined/>
-                    </Link>
-                </Icon>
-                <Icon>
                     <Link to={`/ProductDetail/${item.id}`}>
                         <SearchOutlined/>
                     </Link>
                 </Icon>
                 <Icon>
-                    {item.likes === false ? <FavoriteBorderOutlined onClick={ () => likesProduct(item.id) } /> : <Favorite onClick={() => unlikeProduct(item.id)} /> }
+                    {itemLike && localStorage.getItem("user_id") ? <Favorite color="error" onClick={() => unlikeProduct(item.id)}/> : <FavoriteBorderOutlined onClick={ () => likesProduct(item.id) } /> }
                 </Icon>
             </Info>
         </Container>
