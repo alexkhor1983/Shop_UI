@@ -1,5 +1,4 @@
-import "./App.css";
-
+import React from 'react'
 import { BrowserRouter as Router, Routes , Route } from "react-router-dom";
 import ProductDetail from "./pages/User/product/ProductDetail";
 import Home from "./pages/User/home/Home";
@@ -20,8 +19,6 @@ import User from "./pages/Admin/user/User";
 import UserList from "./pages/Admin/userList/UserList";
 import Transaction from "./pages/Admin/transaction/Transaction";
 import Report from "./pages/Admin/report/Report";
-
-import {Helmet} from 'react-helmet';
 
 const App = () => {
   return (
