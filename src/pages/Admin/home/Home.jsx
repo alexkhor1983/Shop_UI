@@ -1,3 +1,4 @@
+import React from 'react'
 import Chart from "../../../components/Admin/chart/Chart";
 import FeaturedInfo from "../../../components/Admin/featuredInfo/FeaturedInfo";
 import "./home.css";
