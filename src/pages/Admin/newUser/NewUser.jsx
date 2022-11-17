@@ -1,3 +1,4 @@
+import React from 'react'
 import './newUser.css'
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';

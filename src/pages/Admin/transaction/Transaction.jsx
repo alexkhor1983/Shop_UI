@@ -1,3 +1,4 @@
+import React from 'react'
 import "./Transaction.css";
 import { DataGrid } from "@material-ui/data-grid";
 import { DeleteOutline } from "@material-ui/icons";
