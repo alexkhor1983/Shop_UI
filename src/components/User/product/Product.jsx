@@ -7,7 +7,7 @@ import {
 } from "@material-ui/icons";
 import styled from "styled-components";
 import {Link, Navigate} from "react-router-dom";
-import {useState} from "react";
+import React,{useState} from "react";
 
 const Info = styled.div`
   opacity: 0;
