@@ -1,8 +1,9 @@
 import axios from "axios"
-import {Backend_url} from "../constant/constant.json"
+import * as data from "../constant/constant.json"
 
-export const api = axios.create({
-    baseURL: Backend_url
+let tmpData = data
+export const api = axios. create({
+    baseURL: tmpData.Backend_url
 })
 
 /**
