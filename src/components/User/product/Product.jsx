@@ -6,7 +6,7 @@ import {
     Favorite
 } from "@material-ui/icons";
 import styled from "styled-components";
-import {Link, Navigate} from "react-router-dom";
+import {Link} from "react-router-dom";
 import React,{useState} from "react";
 
 const Info = styled.div`
