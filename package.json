@@ -44,6 +44,7 @@
     "recharts": "^2.1.13",
     "saas": "^1.0.0",
     "styled-components": "^5.3.1",
+    "util": "^0.12.5",
     "web-vitals": "^1.0.1"
   },
   "scripts": {
@@ -66,6 +67,11 @@
     "not dead",
     "not op_mini all"
   ],
+  "browser": {
+    "fs": false,
+    "path": false,
+    "os": false
+  },
   "devDependencies": {
     "@material-ui/data-grid": "^4.0.0-alpha.37",
     "@mui/material": "^5.10.2",
