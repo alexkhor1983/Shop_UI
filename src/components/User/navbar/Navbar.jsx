@@ -1,10 +1,22 @@
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {useSelector} from "react-redux"
 import { mobile } from "../../../responsive";
-import { Badge } from "@material-ui/core";
+import {Avatar, Badge} from "@material-ui/core";
+import HistoryIcon from '@mui/icons-material/History';
+import StorefrontIcon from '@mui/icons-material/Storefront';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import { Search, ShoppingCartOutlined } from "@material-ui/icons";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import styled from "styled-components";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import AccountBoxIcon from "@mui/icons-material/AccountBox";
+import Divider from "@mui/material/Divider";
+import Logout from "@mui/icons-material/Logout";
+import {getProfileImage, getProfileImageAndCheckLogin, getProfileInfo} from "../../api/axios";
+import {toast} from "react-toastify";
+import jwt_decode from "jwt-decode";
 
 
 const Container = styled.div`
@@ -13,7 +25,6 @@ const Container = styled.div`
 `;
 
 const Wrapper = styled.div`
-  padding: 10px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -51,9 +62,13 @@ const Center = styled.div`
 `;
 
 const Logo = styled.h1`
+  text-align: center;
+  margin-left: 20px;
   font-weight: bold;
+  color: black;
   ${mobile({ fontSize: "24px" })}
 `;
+
 const Right = styled.div`
   flex: 1;
   display: flex;
@@ -62,7 +77,7 @@ const Right = styled.div`
   ${mobile({ flex: 2, justifyContent: "center" })}
 `;
 
-const MenuItem = styled.div`
+const MenuItemNav = styled.div`
   font-size: 14px;
   cursor: pointer;
   margin-left: 25px;
@@ -70,7 +85,62 @@ const MenuItem = styled.div`
 `;
 
 const Navbar = () => {
+  const Navigate = useNavigate();
   const cart = useSelector((state) => state.cart);
+  const [login,setLogin]= useState(false)
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+
+  const [profileImg,setProfileImg]= useState("")
+  let decodedToken = "";
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const navigateProfile = () => {
+    Navigate('/Profile');
+  };
+
+  const navigateLikeList = () => {
+    Navigate('/likeList');
+  };
+
+  const navigateHistory = () => {
+    Navigate('/transaction');
+  };
+
+  const navigateStore = () => {
+    Navigate('/myProduct');
+  };
+
+  const logout = () => {
+    localStorage.setItem("token","");
+    setLogin(false);
+    Navigate('/');
+  };
+
+  useEffect(() => {
+    if(localStorage.getItem("token")) {
+
+      decodedToken = jwt_decode(localStorage.getItem("token"))
+      console.log(decodedToken.sub)
+
+      getProfileImage(decodedToken.sub).then(res => {
+        console.log(res)
+        setProfileImg(res?.profileImg)
+        setLogin(true)
+      }).catch(() => {
+        setLogin(false)
+      })
+    }else{
+      setLogin(false)
+    }
+  }, [login]);
+
   return (
     <Container>
       <Wrapper>
@@ -78,15 +148,99 @@ const Navbar = () => {
           <Language>EN</Language>
         </Left>
         <Center>
+          <Link to={'/'} style={{ textDecoration: 'none',"align-text":"center"}}>
           <Logo>HolaClothes</Logo>
+        </Link>
         </Center>
         <Right>
-          <Link to={'/Register'} style={{ textDecoration: 'none' }}>
-          <MenuItem>REGISTER</MenuItem>
-          </Link>
-          <Link to={'/Login' } style={{ textDecoration: 'none' }}>
-          <MenuItem>SIGN IN</MenuItem>
-          </Link>
+
+          {!login ? (
+           <div>
+            <Link to={'/Register'} style={{ "textDecoration": "none", "float": "right" }}>
+              <MenuItemNav>REGISTER</MenuItemNav>
+            </Link>
+              <Link to={'/Login' } style={{ "textDecoration": "none", "float": "right" }}>
+              <MenuItemNav>SIGN IN</MenuItemNav>
+            </Link>
+          </div>
+          )
+          :
+          (<div className="topbarIconContainer">
+            <Menu
+                anchorEl={anchorEl}
+                id="account-menu"
+                getContentAnchorEl={null}
+                open={open}
+                onClose={handleClose}
+                onClick={handleClose}
+                PaperProps={{
+                  elevation: 0,
+                  sx: {
+                    overflow: 'visible',
+                    filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                    mt: 1.5,
+                    '& .MuiAvatar-root': {
+                      width: 32,
+                      height: 32,
+                      ml: -0.5,
+                      mr: 1,
+                    },
+                    '&:before': {
+                      content: '""',
+                      display: 'block',
+                      position: 'absolute',
+                      top: 0,
+                      right: 14,
+                      width: 10,
+                      height: 10,
+                      bgcolor: 'background.paper',
+                      transform: 'translateY(-50%) rotate(45deg)',
+                      zIndex: 0,
+                    },
+                  },
+                }}
+                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+            >
+              <MenuItem onClick={navigateProfile}>
+                <ListItemIcon>
+                  <AccountBoxIcon fontSize="small"/>
+                </ListItemIcon>
+                Profile
+              </MenuItem>
+              <Divider />
+              <MenuItem onClick={navigateLikeList}>
+                <ListItemIcon>
+                  <FavoriteBorderIcon fontSize="small" />
+                </ListItemIcon>
+                Likes List
+              </MenuItem>
+              <Divider />
+              <MenuItem onClick={navigateStore}>
+                <ListItemIcon>
+                  <StorefrontIcon fontSize="small"/>
+                </ListItemIcon>
+                Store
+              </MenuItem>
+              <Divider />
+              <MenuItem onClick={navigateHistory}>
+                <ListItemIcon>
+                  <HistoryIcon fontSize="small"/>
+                </ListItemIcon>
+                History
+              </MenuItem>
+              <Divider />
+              <MenuItem onClick={logout}>
+                <ListItemIcon>
+                  <Logout fontSize="small" />
+                </ListItemIcon>
+                Logout
+              </MenuItem>
+            </Menu>
+          <Avatar src={profileImg} className="topAvatar" aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}/>
+        </div>
+        )}
+
           <MenuItem>
             <Link to={'/Cart'}>
             <Badge badgeContent={cart.cartItems.length} color="primary">

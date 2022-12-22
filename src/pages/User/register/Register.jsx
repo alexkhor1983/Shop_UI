@@ -1,6 +1,9 @@
 import React from 'react'
 import styled from "styled-components";
 import { mobile } from "../../../responsive";
+import {toast} from "react-toastify";
+import {sendRegistrationRequest} from "../../../components/api/axios";
+import {useNavigate} from "react-router-dom";
 
 const Container = styled.div`
   width: 100vw;
@@ -56,17 +59,40 @@ const Button = styled.button`
 `;
 
 const Register = () => {
+  const navigate = useNavigate();
+  const handleRegistration = e => {
+    e.preventDefault()
+    if(!(e.target.password.value === e.target.confirmPassword.value)){
+      const notify = () => toast.info("password and confirm password not match");
+      notify()
+      return
+    }
+    sendRegistrationRequest({
+      "username": e.target.username.value,
+      "password": e.target.password.value,
+      "phoneNum": e.target.phoneNum.value,
+      "email": e.target.email.value
+    }).then( () => {
+      const notify = () => toast.info("Account Created, and verification is send to email. Please note that account still cannot login, need to pass verification");
+      notify()
+      navigate("/login")
+      return
+    }).catch( err => {
+      const notify = () => toast.info(err.message);
+      notify()
+      return
+    })
+  }
   return (
     <Container>
       <Wrapper>
         <Title>CREATE AN ACCOUNT</Title>
-        <Form>
-          <Input placeholder="name" />
-          <Input placeholder="last name" />
-          <Input placeholder="username" />
-          <Input placeholder="email" />
-          <Input placeholder="password" />
-          <Input placeholder="confirm password" />
+        <Form onSubmit={handleRegistration}>
+          <Input name ="username" placeholder="username" />
+          <Input name ="email" placeholder="email" type="text" required/>
+          <Input name ="phoneNum" placeholder="phone" type="text" pattern="^(01)[02-46-9]-*[0-9]{7}$|^(01)[1]-*[0-9]{8}$" required/>
+          <Input name ="password" placeholder="password" type="password" />
+          <Input name ="confirmPassword" placeholder="confirm password" type="password" />
           <Agreement>
             By creating an account, I consent to the processing of my personal
             data in accordance with the <b>PRIVACY POLICY</b>

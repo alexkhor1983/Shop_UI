@@ -1,169 +1,177 @@
-import React, { useState } from "react";
-import moment from "moment-timezone";
-import Datetime from "react-datetime";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
-import { Col, Row, Card, Form, Button, InputGroup } from '@themesberg/react-bootstrap';
+import React, {useEffect, useRef, useState} from "react";
+import { Col, Row, Card, Form, Button } from '@themesberg/react-bootstrap';
+import { Upload } from "@aws-sdk/lib-storage";
+import { S3Client, S3 } from "@aws-sdk/client-s3";
+import {toast} from "react-toastify";
+import {nanoid} from "@reduxjs/toolkit";
+import Image from "react-bootstrap/Image";
+import "../../../scss/volt.scss"
+import constant from "../../../components/constant/constant.json"
+import {getProfileInfo, ModifyProfileInfo} from "../../../components/api/axios";
+import jwt_decode from "jwt-decode";
+import {useNavigate, useParams} from "react-router-dom";
+import Navbar from "../../../components/User/navbar/Navbar";
 
 const EditProfileForm = () => {
-  const [birthday, setBirthday] = useState("");
+
+  const [imageUpload,setImageUpload] = useState('')
+  const[fileTypeUpload,setFileTypeUpload] = useState('')
+  const [preview, setPreview] = useState();
+  const fileInputRef = useRef()
+  const [imageChanges,setImageChanges] = useState(false)
+
+  const [username,setUsername] = useState("")
+  let [phoneNum,setPhoneNum] = useState("")
+  const [email,setEmail] = useState("")
+  const [originalProfileImg,setOriginalProfileImg] = useState("")
+
+  const navigate = useNavigate();
+  const token = localStorage.getItem('token');
+  let decodedToken = "";
+  let temp = ""
+  const [didInit,setDidInit] = useState(false)
+
+  const target = {Bucket:"holaclothes-ecommerce-bucket" ,Key:nanoid() + fileTypeUpload.replace("image/","."), Body: imageUpload}
+  const credentials = {accessKeyId: constant.S3_Access_key, secretAccessKey: constant.S3_Secret_key}
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    if (imageChanges) {
+      try {
+        const parallelUploads3 = new Upload({
+          client: new S3Client({region: "ap-southeast-1", credentials}) || new S3({
+            region: "ap-southeast-1",
+            credentials
+          }), // if the name of key value pair same, put one will represent -> {credentials : credentials}
+          leavePartsOnError: false,
+          params: target,
+        })
+        await parallelUploads3.done().then(result => {
+          temp = result.Location
+          const notify = () => toast.success("Image uploaded to server");
+          notify()
+        });
+      } catch (err) {
+        console.log(err);
+        const notify = () => toast.error("image file cannot upload to server");
+        notify()
+        return
+      }
+    }
+    ModifyProfileInfo(imageChanges ? {username, email, phoneNum, profileImg: temp} : {username, email, phoneNum, profileImg : originalProfileImg}).then(res => {
+      console.log(res)
+      const notify = () => toast.success(res);
+      notify()
+      return
+    }).catch(err => {
+      console.log(err)
+      const notify = () => toast.error(err.message);
+      notify()
+      return
+    })
+  }
+
+  useEffect(() => {
+    if(!didInit){
+    try {
+      decodedToken = jwt_decode(token); // validate jwt format
+    } catch (error) {
+      localStorage.setItem("token", "");
+      const notify = () => toast.error("Token Invalid");
+      notify()
+      navigate('/login')
+      return
+    }
+
+    let currentDate = new Date();
+
+    // JWT exp is in seconds, and default 24 hour in backend passed jwt token
+    if (decodedToken.exp * 86400 < currentDate.getTime()) {
+      localStorage.setItem("token", "");
+      const notify = () => toast.error("Token Expired");
+      notify()
+      navigate('/login')
+      return
+      }
+
+      (async () => {
+        await getProfileInfo(decodedToken).then( res => {
+          setPreview(res?.profileImg)
+          setOriginalProfileImg(res?.profileImg)
+          setUsername(res?.username)
+          setPhoneNum(res?.phoneNum)
+          setEmail(res?.email)
+        }).catch(err => {
+          const notify = () => toast.error(err.message);
+          notify()
+          return
+        })
+      })()
+      setDidInit(true)
+    }
+    if (imageUpload) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setPreview(reader.result);
+        };
+        reader.readAsDataURL(imageUpload);
+      } else {
+        setPreview(null);
+      }
+  }, [imageUpload]);
 
   return (
       <Card border="light" className="bg-white shadow-sm mb-4">
+        <Navbar />
         <Card.Body>
           <h5 className="mb-4">Profile information</h5>
-          <Form>
+          <Form onSubmit={handleSubmit}>
             <Row>
               <Col md={6} className="mb-3">
-                <Form.Group id="firstName">
-                  <Form.Label>First Name</Form.Label>
-                  <Form.Control required type="text" placeholder="Enter your first name" />
+                <Form.Group id="Username">
+                  <Form.Label>Username</Form.Label>
+                  <Form.Control type="text" value={username} readOnly={true}/>
                 </Form.Group>
               </Col>
               <Col md={6} className="mb-3">
-                <Form.Group id="lastName">
-                  <Form.Label>Last Name</Form.Label>
-                  <Form.Control required type="text" placeholder="Also your last name" />
+                <Form.Group id="profileImg">
+                  <Form.Label>Profile Image</Form.Label>
+
+                  <Form.Group>
+                    <Image width="200" height="200" style={{"display": "block","margin-left": "auto","margin-right": "auto","marginBottom" : "20px","marginTop" : "20px"}}
+                           src={preview} roundedCircle />
+                  </Form.Group>
+                  <Form.Control type="file" ref={fileInputRef}
+                                accept=" image/png, image/jpeg , image/svg "
+                                onChange={(event) => {
+                                  const file = event.target.files[0];
+                                  if (file !== '' && file.type.substr(0, 5) === "image") {
+                                    setImageChanges(true);
+                                    setImageUpload(file);
+                                    setFileTypeUpload(file.type);
+                                  }
+                                }} />
                 </Form.Group>
               </Col>
             </Row>
-            <Row className="align-items-center">
-              <Col md={6} className="mb-3">
-                <Form.Group id="birthday">
-                  <Form.Label>Birthday</Form.Label>
-                  <Datetime
-                      timeFormat={false}
-                      onChange={setBirthday}
-                      renderInput={(props, openCalendar) => (
-                          <InputGroup>
-                            <InputGroup.Text><FontAwesomeIcon icon={faCalendarAlt} /></InputGroup.Text>
-                            <Form.Control
-                                required
-                                type="text"
-                                value={birthday ? moment(birthday).format("MM/DD/YYYY") : ""}
-                                placeholder="mm/dd/yyyy"
-                                onFocus={openCalendar}
-                                onChange={() => { }} />
-                          </InputGroup>
-                      )} />
-                </Form.Group>
-              </Col>
-              <Col md={6} className="mb-3">
-                <Form.Group id="gender">
-                  <Form.Label>Gender</Form.Label>
-                  <Form.Select defaultValue="0">
-                    <option value="0">Gender</option>
-                    <option value="1">Female</option>
-                    <option value="2">Male</option>
-                  </Form.Select>
-                </Form.Group>
-              </Col>
-            </Row>
+
             <Row>
               <Col md={6} className="mb-3">
-                <Form.Group id="emal">
+                <Form.Group id="email">
                   <Form.Label>Email</Form.Label>
-                  <Form.Control required type="email" placeholder="name@company.com" />
+                  <Form.Control required type="email" readOnly={true} value={email} />
                 </Form.Group>
               </Col>
               <Col md={6} className="mb-3">
                 <Form.Group id="phone">
                   <Form.Label>Phone</Form.Label>
-                  <Form.Control required type="number" placeholder="+12-345 678 910" />
-                </Form.Group>
-              </Col>
-            </Row>
-
-            <h5 className="my-4">Address</h5>
-            <Row>
-              <Col sm={9} className="mb-3">
-                <Form.Group id="address">
-                  <Form.Label>Address</Form.Label>
-                  <Form.Control required type="text" placeholder="Enter your home address" />
-                </Form.Group>
-              </Col>
-              <Col sm={3} className="mb-3">
-                <Form.Group id="addressNumber">
-                  <Form.Label>Number</Form.Label>
-                  <Form.Control required type="number" placeholder="No." />
-                </Form.Group>
-              </Col>
-            </Row>
-            <Row>
-              <Col sm={4} className="mb-3">
-                <Form.Group id="city">
-                  <Form.Label>City</Form.Label>
-                  <Form.Control required type="text" placeholder="City" />
-                </Form.Group>
-              </Col>
-              <Col sm={4} className="mb-3">
-                <Form.Group className="mb-2">
-                  <Form.Label>Select state</Form.Label>
-                  <Form.Select id="state" defaultValue="0">
-                    <option value="0">State</option>
-                    <option value="AL">Alabama</option>
-                    <option value="AK">Alaska</option>
-                    <option value="AZ">Arizona</option>
-                    <option value="AR">Arkansas</option>
-                    <option value="CA">California</option>
-                    <option value="CO">Colorado</option>
-                    <option value="CT">Connecticut</option>
-                    <option value="DE">Delaware</option>
-                    <option value="DC">District Of Columbia</option>
-                    <option value="FL">Florida</option>
-                    <option value="GA">Georgia</option>
-                    <option value="HI">Hawaii</option>
-                    <option value="ID">Idaho</option>
-                    <option value="IL">Illinois</option>
-                    <option value="IN">Indiana</option>
-                    <option value="IA">Iowa</option>
-                    <option value="KS">Kansas</option>
-                    <option value="KY">Kentucky</option>
-                    <option value="LA">Louisiana</option>
-                    <option value="ME">Maine</option>
-                    <option value="MD">Maryland</option>
-                    <option value="MA">Massachusetts</option>
-                    <option value="MI">Michigan</option>
-                    <option value="MN">Minnesota</option>
-                    <option value="MS">Mississippi</option>
-                    <option value="MO">Missouri</option>
-                    <option value="MT">Montana</option>
-                    <option value="NE">Nebraska</option>
-                    <option value="NV">Nevada</option>
-                    <option value="NH">New Hampshire</option>
-                    <option value="NJ">New Jersey</option>
-                    <option value="NM">New Mexico</option>
-                    <option value="NY">New York</option>
-                    <option value="NC">North Carolina</option>
-                    <option value="ND">North Dakota</option>
-                    <option value="OH">Ohio</option>
-                    <option value="OK">Oklahoma</option>
-                    <option value="OR">Oregon</option>
-                    <option value="PA">Pennsylvania</option>
-                    <option value="RI">Rhode Island</option>
-                    <option value="SC">South Carolina</option>
-                    <option value="SD">South Dakota</option>
-                    <option value="TN">Tennessee</option>
-                    <option value="TX">Texas</option>
-                    <option value="UT">Utah</option>
-                    <option value="VT">Vermont</option>
-                    <option value="VA">Virginia</option>
-                    <option value="WA">Washington</option>
-                    <option value="WV">West Virginia</option>
-                    <option value="WI">Wisconsin</option>
-                    <option value="WY">Wyoming</option>
-                  </Form.Select>
-                </Form.Group>
-              </Col>
-              <Col sm={4}>
-                <Form.Group id="zip">
-                  <Form.Label>ZIP</Form.Label>
-                  <Form.Control required type="tel" placeholder="ZIP" />
+                  <Form.Control type="text" value={phoneNum} pattern="^(01)[02-46-9]-*[0-9]{7}$|^(01)[1]-*[0-9]{8}$" placeholder="eg. 01X-XXXXXXXX" onChange={(e)=>{setPhoneNum(e.target.value)}} required />
                 </Form.Group>
               </Col>
             </Row>
             <div className="mt-3">
-              <Button variant="primary" type="submit">Save All</Button>
+              <Button variant="primary" type="submit">Save All</Button> <Button variant="primary" style={{"margin-left":"20px"}} onClick={()=>{navigate('/Profile')}} type="cancel">Cancel</Button>
             </div>
           </Form>
         </Card.Body>

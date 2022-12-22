@@ -16,10 +16,10 @@ const Products = ({searchResults,category}) => {
 
   if (searchResults){
     if(category === 'All'){
-      results = searchResults.map(item => <Product item={item} key={item.id} />)
+      results = searchResults.map(item => <Product item={item} key={item.productId} />)
     }else{
-      filteredCategoryProducts = searchResults.filter(searchResults => searchResults.category === category)
-      results = filteredCategoryProducts.map(item => <Product item={item} key={item.id} />)
+      filteredCategoryProducts = searchResults.filter(searchResults => searchResults.categoryName === category)
+      results = filteredCategoryProducts.map(item => <Product item={item} key={item.productId} />)
     }
   }
   const content = results?.length ? results : <p style={{width: '100%',' align-items': 'center'}}>No Matching Products</p>

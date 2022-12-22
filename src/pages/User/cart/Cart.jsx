@@ -1,6 +1,7 @@
-import React from 'react'
-import {useSelector} from "react-redux"
-import {Link} from "react-router-dom";
+import React from 'react';
+import {useSelector,useDispatch} from "react-redux";
+import {Link, useNavigate} from "react-router-dom";
+import { useConfirm } from "material-ui-confirm";
 import { Add, Remove } from "@material-ui/icons";
 import styled from "styled-components";
 import Announcement from "../../../components/User/announcement/Announcement";
@@ -8,6 +9,10 @@ import Footer from "../../../components/User/footer/Footer";
 import Navbar from "../../../components/User/navbar/Navbar";
 import { mobile } from "../../../responsive";
 import {useEffect, useState} from "react";
+import {increaseCartQuantity, decreaseCartQuantity, getTotals} from "../../../cartSlice";
+import {checkOut, getLikeListNumber} from "../../../components/api/axios";
+import {toast} from "react-toastify";
+import jwt_decode from "jwt-decode";
 
 const Container = styled.div``;
 
@@ -142,7 +147,7 @@ const SummaryItem = styled.div`
   display: flex;
   justify-content: space-between;
   font-weight: ${(props) => props.type === "total" && "500"};
-  font-size: ${(props) => props.type === "total" && "24px"};
+  font-size: ${(props) => props.type === "total" && "30px"};
 `;
 
 const SummaryItemText = styled.span``;
@@ -158,20 +163,57 @@ const Button = styled.button`
 `;
 
 const Cart = () => {
+  const confirm = useConfirm();
   const cart = useSelector((state) => state.cart);
-  const [countLikes,setCountLikes] = useState(0)
+  const dispatch = useDispatch();
+  const Navigate = useNavigate();
+  let token = localStorage.getItem("token");
+  const [countLikes,setCountLikes] = useState(0);
 
-  const handleAddCartQuantity = (cartId) => {
-
+  const handleAddCartQuantity = (cartItem) => {
+    dispatch(increaseCartQuantity({productId:cartItem.productId,option:cartItem.option}))
   }
 
-  const handleMinusCartQuantity = (cartId) => {
+  const handleMinusCartQuantity = (cartItem) => {
+    if(cartItem?.cartQuantity === 1){
+      confirm({ description: `This will remove the cart name : ${cartItem.productName}, option : ${cartItem.option}` })
+          .then(() => dispatch(decreaseCartQuantity({productId:cartItem.productId,option:cartItem.option})))
+          .catch(() => console.log("Cart Remove Cancelled."));
+    }else{
+      dispatch(decreaseCartQuantity({productId:cartItem.productId,option:cartItem.option}))
+    }
+  }
 
+  const handleCheckOut = () => {
+    if (!localStorage.getItem('token')){
+      alert('Have to login before checkout')
+      Navigate("/Login");
+      return
+    }
+    if (cart?.cartItems.length > 0) {
+      checkOut(cart?.cartItems).then(res=>{
+      window.location.href = res?.sessionUrl
+      }).catch(err => {
+        const notify = () => toast.error(err.message);
+        notify()
+        return
+      })
+    }else{
+      const notify = () => toast.error("Please add product to cart before checkout");
+      notify()
+      return
+    }
   }
 
   useEffect(()=>{
-    setCountLikes(1)
-  });
+    dispatch(getTotals())
+    if(token == null || token == ""){
+      let decodedToken = jwt_decode(token)
+      getLikeListNumber(decodedToken.sub).then((res)=>{
+        setCountLikes(res)
+      })
+    }
+  },[dispatch]);
 
   return (
     <Container>
@@ -185,9 +227,9 @@ const Cart = () => {
           </Link>
           <TopTexts>
             <TopText>Shopping Cart ({cart ? cart.cartItems.length : 0})</TopText>
-            <TopText>Your Likes List ({localStorage.getItem("user_id") ? countLikes : 0})</TopText>
+            <TopText>Your Likes List ({localStorage.getItem("token") ? countLikes : 0})</TopText>
           </TopTexts>
-          <TopButton type="filled">CHECKOUT NOW</TopButton>
+          <TopButton type="filled" onClick={()=>{handleCheckOut()}}>CHECKOUT NOW</TopButton>
         </Top>
         <Bottom>
           <Info>
@@ -213,9 +255,9 @@ const Cart = () => {
                       </ProductDetail>
                       <PriceDetail>
                         <ProductAmountContainer>
-                          <Add />
+                          <Add onClick={()=>{handleAddCartQuantity(cartItem)}}/>
                           <ProductAmount>{cartItem.cartQuantity}</ProductAmount>
-                          <Remove />
+                          <Remove onClick={()=>{handleMinusCartQuantity(cartItem)}}/>
                         </ProductAmountContainer>
                         <ProductPrice>RM {cartItem.productPrice}</ProductPrice>
                       </PriceDetail>
@@ -227,15 +269,16 @@ const Cart = () => {
           </Info>
           <Summary>
             <SummaryTitle>ORDER SUMMARY</SummaryTitle>
-            <SummaryItem>
-              <SummaryItemText>Subtotal</SummaryItemText>
-              <SummaryItemPrice>RM 80</SummaryItemPrice>
+            <SummaryItem >
+              <SummaryItemText>SubTotal</SummaryItemText>
+              <SummaryItemPrice>RM {cart.cartTotalAmount}</SummaryItemPrice>
             </SummaryItem>
             <SummaryItem type="total">
               <SummaryItemText>Total</SummaryItemText>
-              <SummaryItemPrice>RM 80</SummaryItemPrice>
+              <SummaryItemPrice>RM {cart?.cartTotalAmount}</SummaryItemPrice>
             </SummaryItem>
-            <Button>CHECKOUT NOW</Button>
+
+            <Button onClick={()=>{handleCheckOut()}}>CHECKOUT NOW</Button>
           </Summary>
         </Bottom>
       </Wrapper>

@@ -1,10 +1,9 @@
-.productList{
-    flex: 4;
+.AdminContainer {
+    display: flex;
 }
 
-.MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium css-1rwt2y5-MuiButtonBase-root-MuiButton-root{
-    display: inline-block;
-    vertical-align: bottom;
+.productList{
+    flex: 4;
 }
 
 .productListItem{
@@ -18,7 +17,7 @@
     border-radius: 50%;
     object-fit: cover;
     margin-right: 10px;
-  }
+}
 
 .productListEdit{
     border: none;

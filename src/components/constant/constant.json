@@ -1,5 +1,6 @@
 {
-  "Stripe_key" : "",
-  "Backend_url" : "http://localhost:5000",
-  "S3_url" : ""
+  "Backend_url" : "http://localhost:8080",
+  "S3_url" : "",
+  "S3_Access_key" : "AKIAV6GBVLLNQ2PBEKXN",
+  "S3_Secret_key" : "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"
 }

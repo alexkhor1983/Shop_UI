@@ -1,69 +1,127 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes , Route } from "react-router-dom";
+import {ToastContainer} from 'react-toastify'
+import { ConfirmProvider } from "material-ui-confirm";
 import ProductDetail from "./pages/User/product/ProductDetail";
 import Home from "./pages/User/home/Home";
 import ProductList from "./pages/User/productList/ProductList";
 import Register from "./pages/User/register/Register";
 import Login from "./pages/User/login/Login";
 import Cart from "./pages/User/cart/Cart";
-import CheckOut from "./pages/checkOut/CheckOut";
 import Profile from "./pages/User/profile/Profile"
 import EditProfileForm from "./pages/User/profile/EditProfile"
 
 import AdminDashboard from "./pages/Admin/home/Home";
-import EditProduct from "./pages/Admin/editProduct/EditProduct";
+import EditProduct from "./pages/User/productSales/pages/editProduct/EditProduct";
 import NewUser from  "./pages/Admin/newUser/NewUser";
-import AdminProduct from "./pages/Admin/product/Product";
 import AdminProductList from "./pages/Admin/productList/ProductList";
-import User from "./pages/Admin/user/User";
 import UserList from "./pages/Admin/userList/UserList";
 import Transaction from "./pages/Admin/transaction/Transaction";
 import Report from "./pages/Admin/report/Report";
+import Activate from "./pages/User/activate/activate";
+import ForgetPassword from "./pages/User/forgetPassword/ForgetPassword";
+import AddProduct from "./pages/User/productSales/pages/addProduct/AddProduct";
+import EditPassword from "./pages/User/profile/EditPassword";
+import Success from "./pages/User/payment/Success";
+import TransactionUser from "./pages/User/transactionUser/TransactionUser";
+import Failure from "./pages/User/payment/Failure";
+import SendUsernameForgetPassword from "./pages/User/forgetPassword/sendUsernameForgetPassword";
+import ProductSales from "./pages/User/productSales/productSales";
+import RatingProduct from "./pages/User/rating/RatingProduct";
+import AdminTransaction from "./pages/Admin/transaction/Transaction";
+import LikeList from "./pages/User/likeList/LikeList";
+import Error404 from "./pages/404";
+import TransactionSeller from "./pages/User/productSales/pages/transactionSeller/TransactionSeller";
+import AdminRoutes from "./components/utils/AdminRoutes"
+import UserRoutes from "./components/utils/UserRoutes"
+import ReportSummary from "./pages/Admin/report/Report";
 
 const App = () => {
   return (
+      <ConfirmProvider>
       <Router>
           <div>
+            <ToastContainer/>
             <Routes>
-              <Route exact path="/" element={<Home />}/>
+                <Route element={<UserRoutes />}>
 
-              <Route path="/ProductList" element={<ProductList />}/>
+                    <Route path="/transaction" element={<TransactionUser />}/>
 
-              <Route path="/ProductDetail/:productId" element={<ProductDetail />}/>
+                    <Route path="/transaction/rating/:orderId" element={<RatingProduct />}/>
 
-              <Route path="/Register" element={<Register />}/>
+                    <Route path="/payment/success/:sessionId" element={<Success />} />
 
-              <Route path="/Login" element={<Login />}/>
+                    <Route path="/payment/failed" element={<Failure />} />
 
-              <Route path="/Cart" element={<Cart />}/>
+                    <Route path="/profile" element={<Profile />} />
 
-              <Route path="/CheckOut" element={<CheckOut />}/>
+                    <Route path="/likeList" element={<LikeList />}/>
 
-              <Route path="/Profile" element={<Profile />}/>
-              
-              <Route path="/EditProfile" element={<EditProfileForm />}/>
+                    <Route path="/editProfile" element={<EditProfileForm />}/>
 
-              <Route path="/Admin/users" element={<UserList />}/>
+                    <Route path="/myProduct" element={<ProductSales />}/>
 
-              <Route path="/Admin/user/:userId" element={<User />}/>
+                    <Route path="/myProduct/addProduct" element={<AddProduct />}/>
 
-              <Route path="/Admin/newUser" element={<NewUser />}/>
+                    <Route path="/myProduct/editProduct/:productId" element={<EditProduct />}/>
 
-              <Route path="/Admin/products" element={<AdminProductList />}/>
+                    <Route path="/myProduct/transaction" element={<TransactionUser />}/>
 
-              <Route path="/Admin/product/:productId" element={<AdminProduct />}/>
+                </Route>
 
-              <Route path="/Admin/editProduct/:productId" element={<EditProduct />} />
+                <Route element={<AdminRoutes />}>
+                    <Route path="/profile" element={<Profile />} />
 
-              <Route path="/Admin/transaction" element={<Transaction/>}/>
+                    <Route path="/likeList" element={<LikeList />}/>
 
-              <Route path="/Admin" element={<AdminDashboard />} />
+                    <Route path="/editProfile" element={<EditProfileForm />}/>
 
-              <Route path="/Admin/Report" element={<Report />} />
+                    <Route path="/editPassword" element={<EditPassword />}/>
+
+                    <Route path="/forgetPassword" element={<SendUsernameForgetPassword />} />
+
+                    <Route path="/forgetPassword/:username/:uuid" element={<ForgetPassword />}/>
+
+                    <Route path="/admin" element={<AdminDashboard />} exact/>
+
+                    <Route path="/admin/user" element={<UserList />}/>
+
+                    <Route path="/admin/user/newUser" element={<NewUser />}/>
+
+                    <Route path="/admin/product" element={<AdminProductList />}/>
+
+                    <Route path="/admin/product/addProduct" element={<AddProduct />}/>
+
+                    <Route path="/admin/product/editProduct/:productId" element={<EditProduct />} />
+
+                    <Route path="/admin/transaction" element={<AdminTransaction/>}/>
+
+                    <Route path="/admin/report" element={<Report />} />
+
+                </Route>
+
+                <Route exact path="/" element={<Home />} exact/>
+
+                <Route path="/productList" element={<ProductList />}/>
+
+                <Route path="/productDetail/:productId" element={<ProductDetail />}/>
+
+                <Route path="/register" element={<Register />}/>
+
+                <Route path="/login" element={<Login />}/>
+
+                <Route path="/user/activate/:username/:uuid" element={<Activate />}/>
+
+                <Route path="/user/forgetPassword/:username/:uuid" element={<ForgetPassword />}/>
+
+                <Route path="/cart" element={<Cart />}/>
+
+                <Route path="*" element={<Error404 />} />
 
             </Routes>
           </div>
         </Router>
+        </ConfirmProvider>
   );
 };
 export default App;

@@ -2,7 +2,9 @@ import { createSlice } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 
 const initialState = {
-    cartItems: [],
+    cartItems: localStorage.getItem("cartItems")
+        ? JSON.parse(localStorage.getItem("cartItems"))
+        : [],
     cartTotalQuantity: 0,
     cartTotalAmount: 0,
 };
@@ -13,7 +15,7 @@ const cartSlice = createSlice({
     reducers: {
         addToCart(state, action) {
             const existingIndex = state.cartItems.findIndex(
-                (item) => ((item.id === action.payload.id)&&(item.option === action.payload.option))
+                item => (item.productId === action.payload.productId && item.option === action.payload.option)
             );
 
             if (existingIndex >= 0) {
@@ -33,53 +35,43 @@ const cartSlice = createSlice({
             }
             localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
         },
-        decreaseCart(state, action) {
+        decreaseCartQuantity(state, action) {
             const itemIndex = state.cartItems.findIndex(
-                (item) => item.id === action.payload.id
+                item => (item.productId === action.payload.productId && item.option === action.payload.option)
             );
 
             if (state.cartItems[itemIndex].cartQuantity > 1) {
                 state.cartItems[itemIndex].cartQuantity -= 1;
 
-                toast.info("Decreased product quantity", {
-                    position: "bottom-left",
-                });
             } else if (state.cartItems[itemIndex].cartQuantity === 1) {
                 const nextCartItems = state.cartItems.filter(
-                    (item) => item.id !== action.payload.id
-                );
-
-                state.cartItems = nextCartItems;
-
-                toast.error("Product removed from cart", {
-                    position: "bottom-left",
-                });
+                    item => !(item.productId === action.payload.productId && item.option === action.payload.option)
+                    // !== in the return logic will not recognize && operator, weird bug[ eg. All option as 'XL' will be deleted even not same productId ]
+                    // for another solution, I use ! operator instead, to only filter the matched productId and option[ which mean only matched to be filtered from array ]
+                )
+                 state.cartItems = nextCartItems;
             }
 
             localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
         },
-        removeFromCart(state, action) {
-            state.cartItems.map((cartItem) => {
-                if (cartItem.id === action.payload.id) {
-                    const nextCartItems = state.cartItems.filter(
-                        (item) => item.id !== cartItem.id
-                    );
+        increaseCartQuantity(state, action) {
+            const itemIndex = state.cartItems.findIndex(
+                item => (item.productId === action.payload.productId && item.option === action.payload.option)
+            );
 
-                    state.cartItems = nextCartItems;
-
-                    toast.error("Product removed from cart", {
-                        position: "bottom-left",
-                    });
-                }
+            if (itemIndex !== null) {
+                state.cartItems[itemIndex].cartQuantity += 1;
                 localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
-                return state;
-            });
+            }
+        },clearCart(state,action){
+            state.cartItem = null;
+            localStorage.removeItem("cartItems",JSON.stringify(state.cartItem));
         },
         getTotals(state, action) {
             let { total, quantity } = state.cartItems.reduce(
                 (cartTotal, cartItem) => {
-                    const { price, cartQuantity } = cartItem;
-                    const itemTotal = price * cartQuantity;
+                    const { productPrice, cartQuantity } = cartItem;
+                    const itemTotal = productPrice * cartQuantity;
 
                     cartTotal.total += itemTotal;
                     cartTotal.quantity += cartQuantity;
@@ -95,15 +87,9 @@ const cartSlice = createSlice({
             state.cartTotalQuantity = quantity;
             state.cartTotalAmount = total;
         },
-        clearCart(state, action) {
-            state.cartItems = [];
-            localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
-            toast.error("Cart cleared", { position: "bottom-left" });
-        },
     },
 });
 
-export const { addToCart, decreaseCart, removeFromCart, getTotals, clearCart } =
-    cartSlice.actions;
+export const { addToCart, decreaseCartQuantity , increaseCartQuantity , clearCart ,getTotals } = cartSlice.actions;
 
 export default cartSlice.reducer;

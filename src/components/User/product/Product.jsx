@@ -71,36 +71,15 @@ const Icon = styled.div`
 `;
 
 const Product = ({item}) => {
-    const [itemLike,setItemLike] = useState(item.likes);
-    let navigate = useNavigate();
-    const likesProduct = (id) => {
-        if (!localStorage.getItem('user_id')){
-            alert('Have to login before like the product')
-            navigate("/Login");
-        }
-        // axios request and refresh the page
-        setItemLike(itemLike => !itemLike);
-        console.log("Likes the product id = " + id);
-    }
-
-    const unlikeProduct = (id) => {
-        // axios request and refresh the page
-        setItemLike(itemLike => !itemLike);
-        console.log("Unlike the product id = " + id);
-    }
-
     return (
         <Container>
             <Circle/>
-            <Image src={item.img}/>
+            <Image src={item?.productImg}/>
             <Info>
                 <Icon>
-                    <Link to={`/ProductDetail/${item.id}`}>
+                    <Link to={`/ProductDetail/${item?.productId}`}>
                         <SearchOutlined/>
                     </Link>
-                </Icon>
-                <Icon>
-                    {itemLike && localStorage.getItem("user_id") ? <Favorite color="error" onClick={() => unlikeProduct(item.id)}/> : <FavoriteBorderOutlined onClick={ () => likesProduct(item.id) } /> }
                 </Icon>
             </Info>
         </Container>

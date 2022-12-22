@@ -1,18 +1,20 @@
 import React, {useEffect, useState} from "react";
 import Select from 'react-select';
 import {useDispatch} from "react-redux";
-import {useParams} from "react-router-dom";
-import { Add, Remove,Search } from "@material-ui/icons";
-import { ToastContainer, toast } from 'react-toastify';
+import {useNavigate, useParams} from "react-router-dom";
+import {Add, Favorite, FavoriteBorderOutlined, Remove, Search} from "@material-ui/icons";
 import 'react-toastify/dist/ReactToastify.css';
 import styled from "styled-components";
-import {getProductsById} from "../../../components/api/axios";
+import {checkIsLike, createOrRemoveLikeList, getOptionsById, getProductsById} from "../../../components/api/axios";
 import Announcement from "../../../components/User/announcement/Announcement";
 import Footer from "../../../components/User/footer/Footer";
 import Navbar from "../../../components/User/navbar/Navbar";
 import { mobile } from "../../../responsive";
 import {addToCart} from "../../../cartSlice";
 import Rating from '@mui/material/Rating';
+import {toast} from "react-toastify";
+import jwt_decode from "jwt-decode";
+
 const Container = styled.div``;
 
 const Wrapper = styled.div`
@@ -116,22 +118,33 @@ const ProductDetail = () => {
 
   const { productId } = useParams()
   const dispatch = useDispatch()
-
+  const Navigate = useNavigate();
   const [selectedOption, setSelectedOption] = useState(null)
   const [cartQuantity,setCartQuantity] = useState(1)
   const [product, setProduct] = useState()
   const [options,setOptions] = useState([])
   const [rating,setRating] = useState(0)
+  const [itemLike,setItemLike] = useState(false);
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
     (async () => {
       const res = await getProductsById(productId)
+      const option = await getOptionsById(productId)
+
+      if(token !== ""){
+        let res = await checkIsLike(productId);
+        setItemLike(res);
+      }
+
+      console.log(res)
+      console.log(option)
 
       let result = [];
 
-      for (let i=0; i< res.options.length; i++) { //loop for the options that shows at react-select component
+      for (let i=0; i< option?.length; i++) { //loop for the options that shows at react-select component
         result[i] = {
-          value : res.options[i] , label : res.options[i]
+          value : option[i].optionName , label : option[i].optionName
         }
       }
       setProduct(res)
@@ -140,14 +153,50 @@ const ProductDetail = () => {
     })()
   }, [])
 
+  const likesProduct = (id) => {
+    if (!localStorage.getItem('token')){
+      alert('Have to login before like the product')
+      Navigate("/Login");
+      return
+    }
+    createOrRemoveLikeList(id).then(() => {
+      setItemLike(itemLike => !itemLike);
+      console.log("Likes the product id = " + id);
+      const notify = () => toast.success("product added to Like List");
+      notify()
+      return
+    }).catch((err)=>{
+      console.log(err);
+    })
+  }
+
+  const unlikeProduct = (id) => {
+    createOrRemoveLikeList(id).then(() => {
+      setItemLike(itemLike => !itemLike);
+      console.log("Unlike the product id = " + id);
+      const notify = () => toast.info("product deleted from Like List");
+      notify()
+      return
+    }).catch((err)=>{
+      console.log(err);
+    })
+  }
+
   const handleAddToCart = () => {
-    console.log(selectedOption)
     if(selectedOption === null){
       const notify = () => toast.error("Please Select Size");
       notify()
       return
     }
-    dispatch(addToCart({productId:product?.id , productName:product?.productName , productImg:product?.img ,productPrice:product?.price,
+    if(token){
+      let decodedToken = jwt_decode(token);
+      if(decodedToken.sub == product?.userName){
+        const notify = () => toast.error("You are the seller of this product, should not purchase your product");
+        notify()
+        return
+      }
+    }
+    dispatch(addToCart({productId:product?.productId , productName:product?.productName , productImg:product?.productImg ,productPrice:product?.productPrice,sellerId:product?.userName,
       option:selectedOption,cartQuantity:cartQuantity}))
   }
 
@@ -163,15 +212,17 @@ const ProductDetail = () => {
       <Announcement />
       <Wrapper>
         <ImgContainer>
-          <Image src={product?.img} />
+          <Image src={product?.productImg} />
         </ImgContainer>
         <InfoContainer>
           <Title>{product?.productName}</Title>
           <Title><Rating name="read-only" value={rating} readOnly /></Title>
+          <Title> {itemLike ? <Favorite color="error" onClick={() => unlikeProduct(product?.productId)}/> : <FavoriteBorderOutlined onClick={ () => likesProduct(product?.productId) } />} </Title>
+          <Title>Seller : {product?.userName}</Title>
           <Desc>
-            {product?.desc}
+            {product?.productDesc}
           </Desc>
-          <Price>RM {product?.price}</Price>
+          <Price>RM {product?.productPrice}</Price>
           <FilterContainer>
             <Filter>
               <FilterTitle>Size</FilterTitle>
@@ -187,7 +238,7 @@ const ProductDetail = () => {
               <Amount>{cartQuantity}</Amount>
               <Add onClick={() => setCartQuantity(cartQuantity.valueOf() + 1)}/>
             </AmountContainer>
-            <Button onClick={handleAddToCart}>ADD TO CART<ToastContainer /></Button>
+            <Button onClick={handleAddToCart}>ADD TO CART</Button>
           </AddContainer>
         </InfoContainer>
       </Wrapper>

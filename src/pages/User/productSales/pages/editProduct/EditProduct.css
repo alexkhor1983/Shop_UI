@@ -37,3 +37,19 @@
   font-weight: 600;
   cursor: pointer;
 }
+
+ul {
+  display:block;
+  width:100%;
+}
+.columnEverySpecification {
+  display:inline-block;
+  width:150px;
+}
+.columnEverySpecification input {
+  display:inline;
+  vertical-align:middle;
+}
+.columnEverySpecification label {
+  display:inline;
+}

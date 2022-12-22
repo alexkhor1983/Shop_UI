@@ -108,13 +108,13 @@ const Footer = () => {
         </SocialContainer>
       </Left>
       <Center>
-        <Title>Useful Links</Title>
+        <Title>Function available</Title>
         <List>
           <ListItem>Home</ListItem>
           <ListItem>Cart</ListItem>
-          <ListItem>Man Fashion</ListItem>
-          <ListItem>Woman Fashion</ListItem>
-          <ListItem>Accessories</ListItem>
+          <ListItem>Clothes Purchase</ListItem>
+          <ListItem>Clothes Selling</ListItem>
+          <ListItem>Admin</ListItem>
           <ListItem>My Profile</ListItem>
           <ListItem>Order History</ListItem>
           <ListItem>Likes List</ListItem>
@@ -126,10 +126,10 @@ const Footer = () => {
           <Room style={{marginRight:"10px"}}/> 9 LRG MAK MANDIN 2 MAK MANDIN 13400 BUTTERWORTH Butterworth Penang 13400 Malaysia
         </ContactItem>
         <ContactItem>
-          <Phone style={{marginRight:"10px"}}/> +601 12146 0908
+          <Phone style={{marginRight:"10px"}}/> +601 12644 1948
         </ContactItem>
         <ContactItem>
-          <MailOutline style={{marginRight:"10px"}} /> holaclothes@support.hola.com.my
+          <MailOutline style={{marginRight:"10px"}} /> holaclothes2022@gmail.com
         </ContactItem>
       </Right>
       <FloatingWhatsApp/>

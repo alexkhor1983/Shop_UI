@@ -1,68 +1,56 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
+import Chart from "../../../components/Admin/chart/Chart";
+import FeaturedInfo from "../../../components/Admin/featuredInfo/FeaturedInfo";
 import "./Report.css";
-import { DataGrid } from "@material-ui/data-grid";
-import { DeleteOutline } from "@material-ui/icons";
-import { transactionRows } from "../../../dummyData";
-import { useState } from "react";
+import WidgetLg from "../../../components/Admin/widgetLg/WidgetLg";
 import Topbar from "../../../components/Admin/topbar/Topbar";
 import Sidebar from "../../../components/Admin/sidebar/Sidebar";
+import {getSalesSummary} from "../../../components/api/axios";
+import {toast} from "react-toastify";
+import LocalPrintshopOutlinedIcon from '@mui/icons-material/LocalPrintshopOutlined';
+import Button from "@mui/material/Button";
+import html2canvas from "html2canvas";
+import jsPDF from 'jspdf';
 
 export default function Report() {
-  useState(()=>{
-  console.log("#######");
+  const [data,setData] = useState([]);
+  useEffect(()=>{
+    getSalesSummary().then(res=>{
+      setData(res)
+    }).catch((err)=>{
+      const notify = () => toast.error(err.message);
+      notify()
+      return
+    })
   },[])
-  const [data, setData] = useState(transactionRows);
 
-  const handleDelete = (id) => {
-    setData(data.filter((item) => item.id !== id));
-  };
-
-  const columns = [
-    { field: "id", headerName: "ID", width: 90 },
-    {
-      field: "user",
-      headerName: "User",
-      width: 200,
-      renderCell: (params) => {
-        return (
-            <div className="userListUser">
-              <img className="userListImg" src={params.row.avatar} alt="" />
-              {params.row.username}
-            </div>
-        );
-      },
-    },
-    {
-      field: "product",
-      headerName: "Product",
-      width: 200,
-      renderCell: (params) => {
-        return (
-            <div className="productListItem">
-              <img className="productListImg" src={params.row.img} alt="" />
-              {params.row.productName}
-            </div>
-        );
-      },
-    },
-    { field: "QuantityPurchase", headerName: "QuantityPurchase", width: 200 },
-    { field: "TransactionAmount", headerName: "TransactionAmount", width: 200 }
-  ];
+  const printDocument = () => {
+      html2canvas(document.getElementById('divToPrint')).then(canvas => {
+          const imgData = canvas.toDataURL('image/png');
+          const pdf = new jsPDF({
+              orientation: "landscape",
+              unit: "in",
+            format:[8,17]});
+          pdf.addImage(imgData, 'PNG', 0, 0);
+          pdf.save("report.pdf");
+      });
+  }
 
   return (
       <div>
         <Topbar/>
-        <div className="container">
+          <Button size="large" variant="outlined" onClick={printDocument} startIcon={<LocalPrintshopOutlinedIcon />}>Download PDF</Button>
+        <div className="AdminContainer">
           <Sidebar />
-    <div className="productList">
-      <DataGrid
-        rows={data}
-        disableSelectionOnClick
-        columns={columns}
-        pageSize={8}
-        checkboxSelection
-      />
-    </div>
+          <div className="home">
+            <div id="divToPrint" >
+            <FeaturedInfo />
+            <Chart data={data} title="Sales Per Month" grid dataKey="sales"/>
+            <div className="homeWidgets">
+            </div>
+          </div>
+          <div/>
+        </div>
         </div>
       </div>
   );

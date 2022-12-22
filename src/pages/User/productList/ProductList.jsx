@@ -8,6 +8,7 @@ import {useEffect, useState} from 'react'
 import {getProducts} from '../../../components/api/axios'
 import SearchBar from '../../../components/searchBar/searchBar'
 import Products from "../../../components/User/products/Products";
+import jwt_decode from "jwt-decode";
 const Container = styled.div``;
 
 const Title = styled.h1`
@@ -63,11 +64,20 @@ const ProductList = () => {
     const[products,setProducts] = useState([]);
     const[searchResults, setSearchResults] = useState([]);
     const[category,setCategory] = useState('');
+    const token = localStorage.getItem('token');
+
 
     useEffect(()=>{
         getProducts().then(json => {
-            setProducts(json)
-            setSearchResults(json)
+            if(token){
+                let decodedToken = jwt_decode(token);
+                let filteredProductList = json.filter( ({userName}) => !userName.match(decodedToken.sub));
+                setProducts(filteredProductList)
+                setSearchResults(filteredProductList)
+            }else{
+                setProducts(json)
+                setSearchResults(json)
+            }
         })
         setCategory('All')
     },[])
@@ -81,17 +91,19 @@ const ProductList = () => {
     <Container>
       <Navbar />
       <Announcement />
-      <Title>Dresses</Title>
+      <Title style={{"text-align": "center"}}>Product List</Title>
       <FilterContainer>
         <Filter>
           <FilterText>Filter Products Category:</FilterText>
           <Select onChange={handleChangeCategory} >
-            <Option >All</Option>
-            <Option>Clothes</Option>
-            <Option>Jackets</Option>
-            <Option>M</Option>
-            <Option>L</Option>
-            <Option>XL</Option>
+              <Option >All</Option>
+              <Option>Blouse</Option>
+              <Option>T-Shirt</Option>
+              <Option>Jacket</Option>
+              <Option>Skirt</Option>
+              <Option>Shorts</Option>
+              <Option>Jeans</Option>
+              <Option>Formal Wear</Option>
           </Select>
         </Filter>
         <Filter>

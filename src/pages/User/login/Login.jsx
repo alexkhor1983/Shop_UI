@@ -1,6 +1,11 @@
 import React from 'react'
 import styled from "styled-components";
 import {mobile} from "../../../responsive";
+import Navbar from "../../../components/User/navbar/Navbar";
+import {Link, useNavigate} from "react-router-dom";
+import {sendLoginInfo} from "../../../components/api/axios";
+import {toast} from "react-toastify";
+import jwt_decode from "jwt-decode";
 
 const Container = styled.div`
   width: 100vw;
@@ -51,20 +56,30 @@ const Button = styled.button`
   margin-bottom: 10px;
 `;
 
-const Link = styled.a`
-  margin: 5px 0px;
-  font-size: 12px;
-  text-decoration: underline;
-  cursor: pointer;
-`;
-
 const Login = () => {
+  const Navigate = useNavigate();
+
   const handleSubmit = (e) => {
     e.preventDefault();
     let username = e.target.username.value;
     let password = e.target.password.value;
+    sendLoginInfo({username,password}).then(res => {
+      localStorage.setItem("token", res.accessToken);
+      const notify = () => toast.success("Login Success");
+      notify()
+      let decodedToken = jwt_decode(res.accessToken)
+      if(decodedToken?.roles === "ROLE_USER"){
+        Navigate("/")
+      }else{
+        Navigate("/admin")
+      }
 
-    //alert(`${username} + ${password}`);
+      return
+    }).catch( err => {
+      const notify = () => toast.error(err.message);
+      notify()
+      return
+    })
   }
   return (
      <Container>
@@ -74,8 +89,8 @@ const Login = () => {
           <Input name="username" placeholder="username" />
           <Input name="password" placeholder="password" type="password"/>
           <Button>LOGIN</Button>
-          <Link>DO NOT YOU REMEMBER THE PASSWORD?</Link>
-          <Link>CREATE A NEW ACCOUNT</Link>
+          <Link style={{"margin": "5px 0px", "font-size" : "12px","text-decoration": "underline", "cursor": "pointer"}} to="/forgetPassword">NOT REMEMBER THE PASSWORD?</Link>
+          <Link style={{"margin": "5px 0px", "font-size" : "12px","text-decoration": "underline", "cursor": "pointer"}} to="/register">CREATE A NEW ACCOUNT</Link>
         </Form>
       </Wrapper>
     </Container>
