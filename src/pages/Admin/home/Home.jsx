@@ -29,8 +29,6 @@ export default function Home() {
                     <FeaturedInfo />
                       <Chart data={data} title="Sales Per Month" grid dataKey="sales"/>
                       <div className="homeWidgets">
-
-                        <WidgetLg/>
                       </div>
                     </div>
                 <div/>

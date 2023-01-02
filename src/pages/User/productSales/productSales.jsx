@@ -16,7 +16,6 @@ import {useConfirm} from "material-ui-confirm";
 const ProductSales = () => {
     const Navigate = useNavigate();
     const [data, setData] = useState([]);
-    const [selectionModel, setSelectionModel] = useState([]);
     const confirm = useConfirm();
 
     useEffect(() => {
@@ -49,30 +48,6 @@ const ProductSales = () => {
         })
     };
 
-    const handleMultiSelectedDelete = () => {
-        if(selectionModel.length > 0) {
-            confirm({description: `This will remove the product id : ${selectionModel}`}).then(()=>{
-                console.log(selectionModel)
-                deleteMultipleProductInfo(selectionModel).then(() => {
-                    const notify = () => toast.success("Product deleted successfully");
-                    notify()
-                    setData(data.filter(item => selectionModel.indexOf(item.id) === -1));
-                    return
-                }).catch( err => {
-                    console.log(err.message);
-                    const notify = () => toast.error("Product deleted failed");
-                    notify()
-                    return
-                })
-            }).catch(()=>{
-                console.log("deletion cancelled")
-            })
-        }else{
-            const notify = () => toast.info("No row selected");
-            notify()
-            return
-        }
-    };
 
     const columns = [
         { field: "id", headerName: "ID", width: 90 },
@@ -130,20 +105,12 @@ const ProductSales = () => {
                     <Button onClick={() => Navigate("/myProduct/addProduct") } variant="outlined" startIcon={<DeleteOutline />}>
                         Add Product
                     </Button><br/><br/>
-                    <Button onClick={() => handleMultiSelectedDelete()} variant="outlined" startIcon={<DeleteOutline />}>
-                        Delete Selected Product
-                    </Button>
 
                     <DataGrid
                         rows={data}
                         disableSelectionOnClick
                         columns={columns}
                         pageSize={10}
-                        checkboxSelection
-                        onSelectionModelChange={(newSelectionModel) => {
-                            setSelectionModel(newSelectionModel);
-                        }}
-                        selectionModel={selectionModel}
                     />
                 </div>
             </div>

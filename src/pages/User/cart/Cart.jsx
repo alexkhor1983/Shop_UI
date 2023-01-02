@@ -13,6 +13,7 @@ import {increaseCartQuantity, decreaseCartQuantity, getTotals} from "../../../ca
 import {checkOut, getLikeListNumber} from "../../../components/api/axios";
 import {toast} from "react-toastify";
 import jwt_decode from "jwt-decode";
+import async from "async";
 
 const Container = styled.div``;
 
@@ -191,7 +192,7 @@ const Cart = () => {
       return
     }
     if (cart?.cartItems.length > 0) {
-      checkOut(cart?.cartItems).then(res=>{
+     checkOut(cart?.cartItems).then(res=>{
       window.location.href = res?.sessionUrl
       }).catch(err => {
         const notify = () => toast.error(err.message);
@@ -207,13 +208,7 @@ const Cart = () => {
 
   useEffect(()=>{
     dispatch(getTotals())
-    if(token == null || token == ""){
-      let decodedToken = jwt_decode(token)
-      getLikeListNumber(decodedToken.sub).then((res)=>{
-        setCountLikes(res)
-      })
-    }
-  },[dispatch]);
+  },[cart,dispatch]);
 
   return (
     <Container>
@@ -226,8 +221,6 @@ const Cart = () => {
           <TopButton >CONTINUE SHOPPING</TopButton>
           </Link>
           <TopTexts>
-            <TopText>Shopping Cart ({cart ? cart.cartItems.length : 0})</TopText>
-            <TopText>Your Likes List ({localStorage.getItem("token") ? countLikes : 0})</TopText>
           </TopTexts>
           <TopButton type="filled" onClick={()=>{handleCheckOut()}}>CHECKOUT NOW</TopButton>
         </Top>

@@ -3,22 +3,25 @@ import { Navigate } from 'react-router-dom';
 import { toast } from "react-toastify";
 import jwt_decode from 'jwt-decode';
 import constant from "../constant/constant.json"
-import async from "async";
+
+const CORSProxy = 'https://cors-anywhere.herokuapp.com/'
+//Use the help of third party server to act as proxy server to handle request in different port
+//Without this EC2 instance will always get CORS error from backend server, it means that server get the request
+//but due to different port they don't want to take a risk to response
+
 
 const guestAxios = axios.create({
     baseURL: constant.Backend_url
 });
 
 const secureAxios = axios.create({
-    baseURL: constant.Backend_url,
-    headers: {
-        Authorization : `Bearer ${localStorage.getItem("token")}`
-    }
+    baseURL: constant.Backend_url
 });
 
 secureAxios.interceptors.request.use( config => {
-    let decodedToken = "";
     const token = localStorage.getItem('token');
+    config.headers.Authorization =  token ? `Bearer ${token}` : '';
+    let decodedToken = "";
     try {
         decodedToken = jwt_decode(token); // validate jwt format
     } catch(error) {
@@ -112,11 +115,6 @@ export const checkIsLike = async (productId) => {
     return response.data
 }
 
-export const getLikeListNumber = async (username) => {
-    const response = await secureAxios.get("/likeList/likeListNumber")
-    return response.data
-}
-
 /**
  Profile Part
  **/
@@ -196,7 +194,7 @@ export const sendVerificationRequest = async (username,uuid) => {
 }
 
 export const sendForgetPasswordRequest = async (username) => {
-    const response = await guestAxios.get(`/user/forgetPassword/${username}`)
+    const response = await guestAxios.get(`user/forgetPassword/${username}`)
     return response.data
 }
 
@@ -236,5 +234,15 @@ export const getAllTransaction = async () => {
 
 export const getSalesSummary = async () => {
     const response = await secureAxios.get(`/admin`)
+    return response.data
+}
+
+export const getCustomerConsumeReport = async () => {
+    const response = await secureAxios.get(`/admin/report/customerConsumeReport`)
+    return response.data
+}
+
+export const getHotSalesReport = async () => {
+    const response = await secureAxios.get(`/admin/report/productHotSalesReport`)
     return response.data
 }

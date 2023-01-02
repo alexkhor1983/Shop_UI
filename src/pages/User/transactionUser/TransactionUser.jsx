@@ -13,7 +13,6 @@ import Sidebar from "../productSales/components/sidebar/Sidebar";
 const TransactionUser = () => {
   const Navigate = useNavigate();
   const [data, setData] = useState([]);
-  const [selectionModel, setSelectionModel] = useState([]);
 
   useEffect(async () => {
     await viewPaymentOfUser().then((res) => {
@@ -25,22 +24,20 @@ const TransactionUser = () => {
       notify()
       return
     })
-  },[data])
+  },[])
 
   return (
-      <div>
+      <div >
           <Navbar/>
           <h1 className="headerOfPaymentHistory">Payment History</h1>
-          <div className="AdminContainer">
-              <Sidebar />
-
+          <div style={{"position": "absolute","height":"100%","width":"100%"}}>
         <DataGrid
             columns={[
               { field: "id", headerName: "ID", width: 90 },
               {
-                field: "product",
+                field: "productName",
                 headerName: "Product",
-                width: 200,
+                width: 350,
                 renderCell: (params) => {
                   return (
                       <div className="productListItem">
@@ -55,9 +52,9 @@ const TransactionUser = () => {
                 }
               },
               {
-                field: "user",
+                field: "username",
                 headerName: "User",
-                width: 200,
+                width: 350,
                 renderCell: (params) => {
                   return (
                       <div className="productListItem">
@@ -74,12 +71,12 @@ const TransactionUser = () => {
               {
                 field: "quantity",
                 headerName: "Quantity",
-                width: 140
+                width: 180
               },
               {
                 field: "amount",
                 headerName: "Unit Price(RM)",
-                width: 160
+                width: 180
               },
               {
                 field: "rating",

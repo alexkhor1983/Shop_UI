@@ -49,7 +49,7 @@ const cartSlice = createSlice({
                     // !== in the return logic will not recognize && operator, weird bug[ eg. All option as 'XL' will be deleted even not same productId ]
                     // for another solution, I use ! operator instead, to only filter the matched productId and option[ which mean only matched to be filtered from array ]
                 )
-                 state.cartItems = nextCartItems;
+                state.cartItems = nextCartItems;
             }
 
             localStorage.setItem("cartItems", JSON.stringify(state.cartItems));

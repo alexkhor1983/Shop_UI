@@ -39,13 +39,13 @@ const TransactionSeller = () => {
               {
                 field: "product",
                 headerName: "Product",
-                width: 380,
+                width: 300,
                 renderCell: (params) => {
                   return (
                       <div className="productListItem">
                         <img
                             className="productListImg"
-                            src={params.row.productImg}
+                            src={params.row.productImage}
                             alt=""
                         />
                         {params.row.productName}
@@ -53,20 +53,42 @@ const TransactionSeller = () => {
                   );
                 }
               },
+                {
+                    field: "user",
+                    headerName: "User",
+                    width: 250,
+                    renderCell: (params) => {
+                        return (
+                            <div className="productListItem">
+                                <img
+                                    className="productListImg"
+                                    src={params.row.profileImage}
+                                    alt=""
+                                />
+                                {params.row.username}
+                            </div>
+                        );
+                    }
+                },
+                {
+                    field: "paymentDate",
+                    headerName: "Payment Date",
+                    width: 180
+                },
               {
                 field: "quantity",
                 headerName: "Quantity",
-                width: 160
+                width: 120
               },
               {
                 field: "specification",
                 headerName: "Specification",
-                width: 180
+                width: 160
               },
               {
                 field: "amount",
                 headerName: "Amount(RM)",
-                width: 180
+                width: 160
               },
             ]}
             rows={data}

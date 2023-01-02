@@ -77,7 +77,7 @@ export default function ProductList() {
     },
     {
       field: "enabled",
-      headerName: "Status",
+      headerName: "Enabled",
       width: 120,
     },
     {

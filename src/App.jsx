@@ -16,7 +16,6 @@ import EditProduct from "./pages/User/productSales/pages/editProduct/EditProduct
 import NewUser from  "./pages/Admin/newUser/NewUser";
 import AdminProductList from "./pages/Admin/productList/ProductList";
 import UserList from "./pages/Admin/userList/UserList";
-import Transaction from "./pages/Admin/transaction/Transaction";
 import Report from "./pages/Admin/report/Report";
 import Activate from "./pages/User/activate/activate";
 import ForgetPassword from "./pages/User/forgetPassword/ForgetPassword";
@@ -33,8 +32,9 @@ import LikeList from "./pages/User/likeList/LikeList";
 import Error404 from "./pages/404";
 import TransactionSeller from "./pages/User/productSales/pages/transactionSeller/TransactionSeller";
 import AdminRoutes from "./components/utils/AdminRoutes"
-import UserRoutes from "./components/utils/UserRoutes"
 import ReportSummary from "./pages/Admin/report/Report";
+import HotSalesReport from "./pages/Admin/report/HotSalesReport";
+import CustomerConsumeReport from "./pages/Admin/report/CustomerConsumeReport";
 
 const App = () => {
   return (
@@ -43,44 +43,50 @@ const App = () => {
           <div>
             <ToastContainer/>
             <Routes>
-                <Route element={<UserRoutes />}>
 
-                    <Route path="/transaction" element={<TransactionUser />}/>
+                <Route exact path="/" element={<Home />} exact/>
 
-                    <Route path="/transaction/rating/:orderId" element={<RatingProduct />}/>
+                <Route path="/productList" element={<ProductList />}/>
 
-                    <Route path="/payment/success/:sessionId" element={<Success />} />
+                <Route path="/productDetail/:productId" element={<ProductDetail />}/>
 
-                    <Route path="/payment/failed" element={<Failure />} />
+                <Route path="/register" element={<Register />}/>
 
-                    <Route path="/profile" element={<Profile />} />
+                <Route path="/login" element={<Login />}/>
 
-                    <Route path="/likeList" element={<LikeList />}/>
+                <Route path="/user/activate/:username/:uuid" element={<Activate />}/>
 
-                    <Route path="/editProfile" element={<EditProfileForm />}/>
+                <Route path="/forgetPassword" element={<SendUsernameForgetPassword />} />
 
-                    <Route path="/myProduct" element={<ProductSales />}/>
+                <Route path="/user/forgetPassword/:username/:uuid" element={<ForgetPassword />}/>
 
-                    <Route path="/myProduct/addProduct" element={<AddProduct />}/>
+                <Route path="/cart" element={<Cart />}/>
 
-                    <Route path="/myProduct/editProduct/:productId" element={<EditProduct />}/>
+                <Route path="/transaction" element={<TransactionUser />}/>
 
-                    <Route path="/myProduct/transaction" element={<TransactionUser />}/>
+                <Route path="/transaction/rating/:orderId" element={<RatingProduct />}/>
 
-                </Route>
+                <Route path="/payment/success/:sessionId" element={<Success />} />
+
+                <Route path="/payment/failed" element={<Failure />} />
+
+                <Route path="/profile" element={<Profile />} />
+
+                <Route path="/likeList" element={<LikeList />}/>
+
+                <Route path="/editProfile" element={<EditProfileForm />}/>
+
+                <Route path="/editPassword" element={<EditPassword />}/>
+
+                <Route path="/myProduct" element={<ProductSales />}/>
+
+                <Route path="/myProduct/addProduct" element={<AddProduct />}/>
+
+                <Route path="/myProduct/editProduct/:productId" element={<EditProduct />}/>
+
+                <Route path="/myProduct/transaction" element={<TransactionSeller />}/>
 
                 <Route element={<AdminRoutes />}>
-                    <Route path="/profile" element={<Profile />} />
-
-                    <Route path="/likeList" element={<LikeList />}/>
-
-                    <Route path="/editProfile" element={<EditProfileForm />}/>
-
-                    <Route path="/editPassword" element={<EditPassword />}/>
-
-                    <Route path="/forgetPassword" element={<SendUsernameForgetPassword />} />
-
-                    <Route path="/forgetPassword/:username/:uuid" element={<ForgetPassword />}/>
 
                     <Route path="/admin" element={<AdminDashboard />} exact/>
 
@@ -96,29 +102,18 @@ const App = () => {
 
                     <Route path="/admin/transaction" element={<AdminTransaction/>}/>
 
-                    <Route path="/admin/report" element={<Report />} />
+                    <Route path="/admin/summaryReport" element={<Report />} />
+
+                    <Route path="/admin/hotSalesReport" element={<HotSalesReport />} />
+
+                    <Route path="/admin/customerConsumeReport" element={<CustomerConsumeReport />} />
 
                 </Route>
-
-                <Route exact path="/" element={<Home />} exact/>
-
-                <Route path="/productList" element={<ProductList />}/>
-
-                <Route path="/productDetail/:productId" element={<ProductDetail />}/>
-
-                <Route path="/register" element={<Register />}/>
-
-                <Route path="/login" element={<Login />}/>
-
-                <Route path="/user/activate/:username/:uuid" element={<Activate />}/>
-
-                <Route path="/user/forgetPassword/:username/:uuid" element={<ForgetPassword />}/>
-
-                <Route path="/cart" element={<Cart />}/>
 
                 <Route path="*" element={<Error404 />} />
 
             </Routes>
+
           </div>
         </Router>
         </ConfirmProvider>

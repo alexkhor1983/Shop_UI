@@ -52,11 +52,25 @@ export default function Sidebar() {
               Transactions
             </li>
             </Link>
-            <Link to="/admin/report" className="link">
+            <Link to="/admin/summaryReport" className="link">
             <li className="sidebarListItem">
               <BarChart className="sidebarIcon" />
-              Report
+              SummaryReport
             </li>
+            </Link>
+
+            <Link to="/admin/hotSalesReport" className="link">
+              <li className="sidebarListItem">
+                <BarChart className="sidebarIcon" />
+                Hot Sales Report
+              </li>
+            </Link>
+
+            <Link to="/admin/customerConsumeReport" className="link">
+              <li className="sidebarListItem">
+                <BarChart className="sidebarIcon" />
+                Customer Consume Report
+              </li>
             </Link>
           </ul>
         </div>

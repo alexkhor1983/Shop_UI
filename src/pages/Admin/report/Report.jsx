@@ -32,7 +32,7 @@ export default function Report() {
               unit: "in",
             format:[8,17]});
           pdf.addImage(imgData, 'PNG', 0, 0);
-          pdf.save("report.pdf");
+          pdf.save("summaryReport.pdf");
       });
   }
 

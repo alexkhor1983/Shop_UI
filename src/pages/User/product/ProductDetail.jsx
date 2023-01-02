@@ -222,7 +222,7 @@ const ProductDetail = () => {
           <Desc>
             {product?.productDesc}
           </Desc>
-          <Price>RM {product?.productPrice}</Price>
+          <Price>RM {product?.productPrice.toFixed(2)}</Price>
           <FilterContainer>
             <Filter>
               <FilterTitle>Size</FilterTitle>

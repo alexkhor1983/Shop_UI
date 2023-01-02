@@ -6,6 +6,7 @@ import styled from "styled-components";
 import {getProfileInfo} from "../../../components/api/axios";
 import {toast} from "react-toastify";
 import {useNavigate} from "react-router-dom";
+import async from "async";
 
 
 const Button = styled.button`
@@ -29,27 +30,31 @@ export default function Profile() {
   const [phoneNum,setPhoneNum] = useState("")
   const [email,setEmail] = useState("")
   const [profileImg,setProfileImg] = useState("")
+  const [informationUpdated,setInformationUpdated] = useState(false)
 
-  useEffect(()=>{
-    getProfileInfo().then(res => {
+  useEffect( async () => {
+    console.log("useEffect called -> result before")
+    console.log(phoneNum)
+    console.log(email)
+    setPhoneNum("")
+    setEmail("")
+    setProfileImg("")
+    setUsername("")
+
+    await getProfileInfo().then(res => {
       setPhoneNum(res?.phoneNum)
       setEmail(res?.email)
       setProfileImg(res?.profileImg)
       setUsername(res?.username)
+      setInformationUpdated(true)
     }).catch(err => {
-      console.log(err)
-      if (err.status === 401){
-        const notify = () => toast.error(err);
-        notify()
-        //navigate('/login')
-        return
-      }else{
-        const notify = () => toast.error(err);
-        notify()
-        return
-      }
-    })
-  },[username])
+          console.log(err)
+          const notify = () => toast.error("Bad Credentials or Server Error Occur");
+          notify()
+          return
+        }
+    )
+  },[informationUpdated])
 
   const handleEditProfile = () => {
     navigate('/EditProfile')

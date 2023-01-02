@@ -1,5 +1,5 @@
 {
-  "Backend_url" :  "ec2-54-169-255-185.ap-southeast-1.compute.amazonaws.com:8080",
+  "Backend_url" :  "http://localhost:8080",
   "S3_Access_key" : "AKIAV6GBVLLNQ2PBEKXN",
   "S3_Secret_key" : "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"
 }

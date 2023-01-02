@@ -22,19 +22,19 @@ export default function FeaturedInfo() {
 
   useEffect(async () => {
     await getSalesSummary().then(res => {
-      setCurrentMonthSales(res[currentMonthIndex].sales);
-      setCurrentMonthRevenue(res[currentMonthIndex].sales * rateBeenCharges);
-      setLastMonthSales(res[lastMonthIndex].sales);
-      setLastMonthRevenue(res[lastMonthIndex].sales * rateBeenCharges);
+      setCurrentMonthSales((res[currentMonthIndex].sales).toFixed(2));
+      setCurrentMonthRevenue((res[currentMonthIndex].sales * rateBeenCharges).toFixed(2));
+      setLastMonthSales((res[lastMonthIndex].sales).toFixed(2));
+      setLastMonthRevenue((res[lastMonthIndex].sales * rateBeenCharges).toFixed(2));
 
-      setSalesCompareWithLastSales(currentMonthSales - lastMonthSales)
-      setRevenueCompareWithLastRevenue(currentMonthRevenue - lastMonthRevenue)
+      setSalesCompareWithLastSales((currentMonthSales - lastMonthSales).toFixed(2));
+      setRevenueCompareWithLastRevenue((currentMonthRevenue - lastMonthRevenue).toFixed(2));
     }).catch((err) => {
       const notify = () => toast.error(err.message);
       notify()
       return
     })
-  },[salesCompareWithLastSales,revenueCompareWithLastRevenue])
+  },[currentMonthRevenue])
   return (
     <div className="featured">
       <div className="featuredItem">
@@ -52,7 +52,7 @@ export default function FeaturedInfo() {
         <div className="featuredMoneyContainer">
           <span className="featuredMoney">RM {currentMonthSales}</span>
           <span className="featuredMoneyRate">
-            {salesCompareWithLastSales} {(salesCompareWithLastSales >= 0 ) ? <ArrowUpward  className="featuredIcon positive"/> : <ArrowDownward  className="featuredIcon negative"/>}
+           RM {salesCompareWithLastSales} {(salesCompareWithLastSales >= 0 ) ? <ArrowUpward  className="featuredIcon positive"/> : <ArrowDownward  className="featuredIcon negative"/>}
           </span>
         </div>
         <span className="featuredSub">Compared to last month</span>
