@@ -33,8 +33,8 @@ import Error404 from "./pages/404";
 import TransactionSeller from "./pages/User/productSales/pages/transactionSeller/TransactionSeller";
 import AdminRoutes from "./components/utils/AdminRoutes"
 import ReportSummary from "./pages/Admin/report/Report";
-import HotSalesReport from "./pages/Admin/report/HotSalesReport";
-import CustomerConsumeReport from "./pages/Admin/report/CustomerConsumeReport";
+import HotSalesReport from "./pages/Admin/report/Report";
+import CustomerConsumeReport from "./pages/Admin/report/Report";
 
 const App = () => {
   return (
